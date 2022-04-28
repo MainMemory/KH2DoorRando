@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace KH2DoorRando
@@ -75,33 +76,73 @@ namespace KH2DoorRando
 					dlg.InitialDirectory = scriptpath;
 				if (dlg.ShowDialog(this)== DialogResult.OK)
 				{
+					List<int> ignoreworlds = new List<int>();
+					if (!goaEnable.Checked)
+						ignoreworlds.Add(-1);
+					if (!ttEnable.Checked)
+						ignoreworlds.Add(2);
+					if (!hbEnable.Checked)
+						ignoreworlds.Add(4);
+					if (!bcEnable.Checked)
+						ignoreworlds.Add(5);
+					if (!ocEnable.Checked)
+						ignoreworlds.Add(6);
+					if (!agEnable.Checked)
+						ignoreworlds.Add(7);
+					if (!ldEnable.Checked)
+						ignoreworlds.Add(8);
+					if (!awEnable.Checked)
+						ignoreworlds.Add(9);
+					if (!plEnable.Checked)
+						ignoreworlds.Add(10);
+					if (!dcEnable.Checked)
+					{
+						ignoreworlds.Add(12);
+						ignoreworlds.Add(13);
+					}
+					if (!htEnable.Checked)
+						ignoreworlds.Add(14);
+					if (!prEnable.Checked)
+						ignoreworlds.Add(16);
+					if (!spEnable.Checked)
+						ignoreworlds.Add(17);
+					if (!nwEnable.Checked)
+						ignoreworlds.Add(18);
+					Room goa = roomdict[4][26];
+					goa.World = -1;
 					foreach (Room r in rooms)
 						foreach (Door d in r.Doors)
-						{
-							d.NewDestRoom = null;
-							d.NewDestDoor = null;
-							d.Used = false;
-						}
+							if (ignoreworlds.Contains(r.World))
+							{
+								d.NewDestRoom = roomdict[d.DestWorld][d.DestRoom];
+								if (d.NewDestRoom.CopyOf.HasValue)
+									d.NewDestRoom = roomdict[d.NewDestRoom.World][d.NewDestRoom.CopyOf.Value];
+								d.Used = true;
+							}
+							else
+							{
+								d.NewDestRoom = null;
+								d.NewDestDoor = null;
+								d.Used = false;
+							}
 					twoway = twoWayDoors.Checked;
 					if (seedName.TextLength == 0)
 						seedName.Text = Base36(DateTime.Now.Ticks) + Base36((uint)Environment.TickCount);
 					Random rand = new Random(seedName.Text.GetHashCode());
-					if (twoWayDoors.Checked)
+					if (twoway)
 					{
-						Room[] multiexit;
+						Room[] multiexit = rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 1).ToArray();
+						Shuffle(multiexit, rand);
+						if (goaEnable.Checked)
+						{
+							multiexit[Array.IndexOf(multiexit, goa)] = multiexit[0];
+							multiexit[0] = goa;
+						}
 						if (cornerstoneHill.Checked)
 						{
-							Door from = roomdict[4][26].Doors[1];
-							Door to = roomdict[13][0].Doors[0];
-							from.NewDestRoom = to.Room;
-							from.NewDestDoor = to;
-							to.NewDestRoom = from.Room;
-							to.NewDestDoor = from;
-							multiexit = rooms.Where(a => !a.CopyOf.HasValue && a.Doors.Length > 1 && (a.World != 4 || a.ID != 26)).ToArray();
+							multiexit[Array.IndexOf(multiexit, roomdict[13][0])] = multiexit[1];
+							multiexit[1] = roomdict[13][0];
 						}
-						else
-							multiexit = rooms.Where(a => !a.CopyOf.HasValue && a.Doors.Length > 1).ToArray();
-						Shuffle(multiexit, rand);
 						for (int i = 0; i < multiexit.Length; i++)
 						{
 							Room src = multiexit[i];
@@ -117,7 +158,7 @@ namespace KH2DoorRando
 						}
 						Door[] freeexits = multiexit.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
 						Shuffle(freeexits, rand);
-						Room[] singles = rooms.Where(a => !a.CopyOf.HasValue && a.Doors.Length > 0).Except(multiexit).ToArray();
+						Room[] singles = rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0).Except(multiexit).ToArray();
 						Shuffle(singles, rand);
 						if (singles.Length > freeexits.Length)
 						{
@@ -153,15 +194,18 @@ namespace KH2DoorRando
 					}
 					else
 					{
+						Room[] r2 = rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0).ToArray();
+						Shuffle(r2, rand);
+						if (goaEnable.Checked)
+						{
+							r2[Array.IndexOf(r2, goa)] = r2[0];
+							r2[0] = goa;
+						}
 						if (cornerstoneHill.Checked)
 						{
-							Door from = roomdict[4][26].Doors[1];
-							Door to = roomdict[13][0].Doors[0];
-							from.NewDestRoom = to.Room;
-							from.NewDestDoor = to;
+							r2[Array.IndexOf(r2, roomdict[13][0])] = r2[1];
+							r2[1] = roomdict[13][0];
 						}
-						Room[] r2 = rooms.Where(a => !a.CopyOf.HasValue && a.Doors.Length > 0).ToArray();
-						Shuffle(r2, rand);
 						for (int i = 0; i < r2.Length; i++)
 						{
 							Room src = r2[i];
@@ -185,13 +229,12 @@ namespace KH2DoorRando
 							src.NewDestDoor = dst;
 						}
 					}
-					Door ca1 = rooms.Where(a => !a.CopyOf.HasValue).SelectMany(a => a.Doors).Single(b => b.NewDestRoom.World == 18 && b.NewDestRoom.ID == 7 && b.NewDestDoor.ID == 1);
-					ca1.NewDestRoom = roomdict[18][8];
-					ca1.NewDestDoor = ca1.NewDestRoom.Doors[0];
 					var sb = new StringBuilder("Rooms = {");
 					sb.AppendLine();
-					foreach (var room in rooms.Where(a => !a.CopyOf.HasValue && a.Doors.Length > 0))
+					foreach (var room in rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0))
 					{
+						if (room == goa)
+							goa.World = 4;
 						sb.AppendLine($"\t[0x{(room.ID << 8) | room.World:X4}] = {{");
 						foreach (var door in room.Doors)
 							sb.AppendLine($"\t\t[0x{(door.DestDoor << 16) | (door.DestRoom << 8) | door.DestWorld:X6}] = {{ w={door.NewDestRoom.World}, r={door.NewDestRoom.ID}, d={door.NewDestDoor.ID} }},");
@@ -218,7 +261,9 @@ namespace KH2DoorRando
 							}
 					}
 					sb.AppendLine("}");
+					sb.Replace("{ w=18, r=7, d=1 }", "{ w=18, r=8, d=0 }");
 					File.WriteAllText(dlg.FileName, File.ReadAllText("DoorRando.template.lua").Replace("--REPLACE", sb.ToString()));
+					goa.World = 4;
 					using (var sw = File.CreateText(Path.Combine(Path.GetDirectoryName(dlg.FileName), "DoorSpoilers.csv")))
 					{
 						sw.Write("Rooms,");
@@ -247,6 +292,13 @@ namespace KH2DoorRando
 			using (Tracker t = new Tracker())
 				t.ShowDialog(this);
 		}
+
+		private void dcEnable_CheckedChanged(object sender, EventArgs e)
+		{
+			cornerstoneHill.Enabled = dcEnable.Checked && goaEnable.Checked;
+			if (!dcEnable.Checked || !goaEnable.Checked)
+				cornerstoneHill.Checked = false;
+		}
 	}
 
 	public class Room
@@ -258,6 +310,8 @@ namespace KH2DoorRando
 		[JsonProperty("Copy Of")]
 		public int? CopyOf { get; set; }
 		public Door[] Doors { get; set; }
+		public Door[] Warps { get; set; }
+		public int[] Events { get; set; }
 		[JsonProperty("Extra Doors")]
 		public Door[] ExtraDoors { get; set; }
 		public int[] Copies { get; set; }

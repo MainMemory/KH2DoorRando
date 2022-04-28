@@ -47,8 +47,10 @@ namespace KH2DoorRando
 			timer1.Start();
 		}
 
+		int tries = 0;
 		private void timer1_Tick(object sender, EventArgs e)
 		{
+			bool newproc = false;
 			if (proc == null)
 			{
 				var pl = Process.GetProcessesByName("KINGDOM HEARTS II FINAL MIX");
@@ -59,11 +61,11 @@ namespace KH2DoorRando
 					proc.Exited += Proc_Exited;
 					var ba = proc.MainModule.BaseAddress;
 					Now = ba + 0x0714DB8;
-					Save = ba + 0x09A7070;
+					Save = ba + 0x09A70B0;
 					lastRoom = null;
 					foreach (var world in worlds)
 						world.LastEventRoom = null;
-					currentRoom.Name = "Unknown Room";
+					newproc = true;
 				}
 				else
 				{
@@ -85,7 +87,7 @@ namespace KH2DoorRando
 				Room room = null;
 				if (MainForm.roomdict.TryGetValue(proc.ReadByte(Now), out var world))
 					world.TryGetValue(proc.ReadByte(Now + 1), out room);
-				if (room != lastRoom)
+				if (room != lastRoom || newproc)
 				{
 					if (room != null)
 					{
@@ -126,7 +128,7 @@ namespace KH2DoorRando
 					}
 					else
 					{
-						currentRoom.Name = "Unknown Room";
+						currentRoom.Text = "Unknown Room";
 						foreach (var door in doorLabels)
 							door.Text = "-";
 						if (findRoom.SelectedIndex != -1)
@@ -135,13 +137,17 @@ namespace KH2DoorRando
 							roomPath.Text = "?????????????";
 						}
 					}
-					lastRoom = room;
+					if (lastRoom == null || lastRoom.Doors.Any(a => a.NewDestRoom == room) || tries++ >= 2)
+					{
+						tries = 0;
+						lastRoom = room;
+					}
 				}
 				foreach (var wd in worlds)
 				{
 					bool found = false;
 					foreach (var rm in wd.Rooms)
-						if (proc.ReadUInt16(Save + 0x10 + 0x180 * rm.World + 0x6 * rm.ID + 4) != 0)
+						if (Array.IndexOf(rm.Events, proc.ReadUInt16(Save + 0x10 + 0x180 * rm.World + 0x6 * rm.ID + 4)) != -1)
 						{
 							found = true;
 							if (rm != wd.LastEventRoom)
@@ -151,7 +157,7 @@ namespace KH2DoorRando
 							}
 							break;
 						}
-					if (!found && wd.LastEventRoom != null)
+					if (!found && (newproc || wd.LastEventRoom != null))
 					{
 						wd.EventLabel.Text = "No events.";
 						wd.LastEventRoom = null;
@@ -162,6 +168,8 @@ namespace KH2DoorRando
 
 		Room[] FindShortestPath(Room start, Room end)
 		{
+			if (start == end)
+				return new[] { start };
 			Stack<Room> stack = new Stack<Room>(MainForm.rooms.Length);
 			stack.Push(start);
 			return FindShortestPath(start, end, stack, null);
@@ -169,26 +177,55 @@ namespace KH2DoorRando
 
 		Room[] FindShortestPath(Room stage, Room end, Stack<Room> path, Room[] shortestPath)
 		{
+			if (stage.CopyOf.HasValue)
+				stage = MainForm.roomdict[stage.World][stage.CopyOf.Value];
 			if (shortestPath != null && path.Count >= shortestPath.Length)
 				return shortestPath;
+			Queue<Room> nextrooms = new Queue<Room>();
 			foreach (Door door in stage.Doors)
 				if (!path.Contains(door.NewDestRoom) && (door.Used || showSpoilers.Checked))
 				{
-					path.Push(door.NewDestRoom);
 					if (door.NewDestRoom == end)
 					{
 						if (shortestPath == null || path.Count < shortestPath.Length)
 						{
+							path.Push(door.NewDestRoom);
 							shortestPath = path.ToArray();
 							Array.Reverse(shortestPath);
 							path.Pop();
 							return shortestPath;
 						}
 					}
-					else
-						shortestPath = FindShortestPath(door.NewDestRoom, end, path, shortestPath);
-					path.Pop();
+					else if (!nextrooms.Contains(door.NewDestRoom))
+						nextrooms.Enqueue(door.NewDestRoom);
 				}
+			foreach (Door door in stage.Warps)
+			{
+				Room destroom = MainForm.roomdict[door.DestWorld][door.DestRoom];
+				if (!path.Contains(destroom))
+				{
+					if (destroom == end)
+					{
+						if (shortestPath == null || path.Count < shortestPath.Length)
+						{
+							path.Push(destroom);
+							shortestPath = path.ToArray();
+							Array.Reverse(shortestPath);
+							path.Pop();
+							return shortestPath;
+						}
+					}
+					else if (!nextrooms.Contains(destroom))
+						nextrooms.Enqueue(destroom);
+				}
+			}
+			while (nextrooms.Count > 0)
+			{
+				Room destroom = nextrooms.Dequeue();
+				path.Push(destroom);
+				shortestPath = FindShortestPath(destroom, end, path, shortestPath);
+				path.Pop();
+			}
 			return shortestPath;
 		}
 

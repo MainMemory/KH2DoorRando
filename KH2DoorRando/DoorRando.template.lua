@@ -41,7 +41,7 @@ end
 function _OnFrame()
 local room = Rooms[ReadShort(Now+0x30)]
 if room ~= nil then
-	local door = room[ReadInt(Now+0x20)]
+	local door = room[ReadInt(Now+0x20) & 0xFFFFFF]
 	if door ~= nil then
 		Warp(door.w, door.r, door.d)
 		WriteInt(Now+0x20,0xFFFFFFFF) --Don't repeat this process indefinitely
