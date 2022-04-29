@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,9 +17,9 @@ namespace KH2DoorRando
 			InitializeComponent();
 		}
 
-		public static Room[] rooms;
-		public static Dictionary<int, Dictionary<int, Room>> roomdict = new Dictionary<int, Dictionary<int, Room>>();
-		public static bool twoway;
+		Settings settings;
+		Room[] rooms, roomsavail;
+		Dictionary<int, Dictionary<int, Room>> roomdict = new Dictionary<int, Dictionary<int, Room>>();
 
 		private static void Shuffle<T>(T[] arr, Random rand)
 		{
@@ -30,6 +31,31 @@ namespace KH2DoorRando
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			if (File.Exists("Settings.json"))
+			{
+				settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText("Settings.json"));
+				if (!string.IsNullOrEmpty(settings.Seed))
+					seedName.Text = settings.Seed;
+				twoWayDoors.Checked = settings.TwoWayDoors;
+				goaEnable.Checked = settings.EnableGoA;
+				ttEnable.Checked = settings.EnableTT;
+				hbEnable.Checked = settings.EnableHB;
+				bcEnable.Checked = settings.EnableBC;
+				ocEnable.Checked = settings.EnableOC;
+				agEnable.Checked = settings.EnableAG;
+				ldEnable.Checked = settings.EnableLD;
+				awEnable.Checked = settings.EnableAW;
+				plEnable.Checked = settings.EnablePL;
+				atEnable.Checked = settings.EnableAT;
+				dcEnable.Checked = settings.EnableDC;
+				htEnable.Checked = settings.EnableHT;
+				prEnable.Checked = settings.EnablePR;
+				spEnable.Checked = settings.EnableSP;
+				nwEnable.Checked = settings.EnableNW;
+				cornerstoneHill.Checked = settings.CornerstoneHill;
+			}
+			else
+				settings = new Settings();
 			rooms = JsonConvert.DeserializeObject<Room[]>(File.ReadAllText("Door_Rando.json"));
 			foreach (Room r in rooms)
 			{
@@ -42,14 +68,60 @@ namespace KH2DoorRando
 				world.Add(r.ID, r);
 			}
 			foreach (Room r in rooms)
+			{
+				if (r.CopyOfID.HasValue)
+					r.CopyOf = roomdict[r.World][r.CopyOfID.Value];
+				if (r.CopyIDs != null)
+					r.Copies = r.CopyIDs.Select(a => roomdict[r.World][a]).ToArray();
+				else
+				{
+					r.CopyIDs = new int[0];
+					r.Copies = new Room[0];
+				}
+				if (r.ExtraDoors == null)
+					r.ExtraDoors = new Door[0];
 				foreach (Door d in r.Doors)
 				{
 					d.Room = r;
-					if (roomdict.TryGetValue(d.DestWorld, out Dictionary<int, Room> world) && world.TryGetValue(d.DestRoom, out Room dr))
-						d.DestName = dr.Name;
-					else
-						d.DestName = $"{d.DestWorld}:{d.DestRoom}";
+					d.DestRoom = roomdict[d.DestWorld][d.DestRoomID];
+					d.DestDoor = Array.Find(d.DestRoom.Doors, a => a.ID == d.DestDoorID);
 				}
+				foreach (Door d in r.ExtraDoors)
+				{
+					d.Room = r;
+					d.CopyOf = Array.Find(r.Doors, a => a.ID == d.CopyOfID);
+					d.DestRoom = roomdict[d.DestWorld][d.DestRoomID];
+					d.DestDoor = Array.Find(d.DestRoom.Doors, a => a.ID == d.DestDoorID);
+				}
+				foreach (Warp w in r.Warps)
+				{
+					w.Room = r;
+					w.DestRoom = roomdict[w.DestWorld][w.DestRoomID];
+				}
+			}
+		}
+
+		private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			settings.Seed = seedName.Text;
+			settings.TwoWayDoors = twoWayDoors.Checked;
+			settings.EnableGoA = goaEnable.Checked;
+			settings.EnableTT = ttEnable.Checked;
+			settings.EnableHB = hbEnable.Checked;
+			settings.EnableBC = bcEnable.Checked;
+			settings.EnableOC = ocEnable.Checked;
+			settings.EnableAG = agEnable.Checked;
+			settings.EnableLD = ldEnable.Checked;
+			settings.EnableAW = awEnable.Checked;
+			settings.EnablePL = plEnable.Checked;
+			settings.EnableAT = atEnable.Checked;
+			settings.EnableDC = dcEnable.Checked;
+			settings.EnableHT = htEnable.Checked;
+			settings.EnablePR = prEnable.Checked;
+			settings.EnableSP = spEnable.Checked;
+			settings.EnableNW = nwEnable.Checked;
+			settings.CornerstoneHill = cornerstoneHill.Checked;
+			File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settings));
 		}
 
 		private static string Base36(long value)
@@ -95,6 +167,8 @@ namespace KH2DoorRando
 						ignoreworlds.Add(9);
 					if (!plEnable.Checked)
 						ignoreworlds.Add(10);
+					if (!atEnable.Checked)
+						ignoreworlds.Add(11);
 					if (!dcEnable.Checked)
 					{
 						ignoreworlds.Add(12);
@@ -114,24 +188,25 @@ namespace KH2DoorRando
 						foreach (Door d in r.Doors)
 							if (ignoreworlds.Contains(r.World))
 							{
-								d.NewDestRoom = roomdict[d.DestWorld][d.DestRoom];
-								if (d.NewDestRoom.CopyOf.HasValue)
-									d.NewDestRoom = roomdict[d.NewDestRoom.World][d.NewDestRoom.CopyOf.Value];
+								d.NewDestRoom = roomdict[d.DestWorld][d.DestRoomID];
+								if (d.NewDestRoom.CopyOf != null)
+									d.NewDestRoom = d.NewDestRoom.CopyOf;
 								d.Used = true;
 							}
 							else
 							{
 								d.NewDestRoom = null;
 								d.NewDestDoor = null;
-								d.Used = false;
+								d.Used = null;
 							}
-					twoway = twoWayDoors.Checked;
+					roomsavail = rooms.Where(a => a.CopyOf == null && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0).ToArray();
+					goa.World = 4;
 					if (seedName.TextLength == 0)
 						seedName.Text = Base36(DateTime.Now.Ticks) + Base36((uint)Environment.TickCount);
 					Random rand = new Random(seedName.Text.GetHashCode());
-					if (twoway)
+					if (twoWayDoors.Checked)
 					{
-						Room[] multiexit = rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 1).ToArray();
+						Room[] multiexit = roomsavail.Where(a => a.Doors.Length > 1).ToArray();
 						Shuffle(multiexit, rand);
 						if (goaEnable.Checked)
 						{
@@ -158,7 +233,7 @@ namespace KH2DoorRando
 						}
 						Door[] freeexits = multiexit.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
 						Shuffle(freeexits, rand);
-						Room[] singles = rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0).Except(multiexit).ToArray();
+						Room[] singles = roomsavail.Except(multiexit).ToArray();
 						Shuffle(singles, rand);
 						if (singles.Length > freeexits.Length)
 						{
@@ -185,7 +260,7 @@ namespace KH2DoorRando
 							Room dst;
 							do
 							{
-								dst = rooms[rand.Next(rooms.Length)];
+								dst = roomsavail[rand.Next(roomsavail.Length)];
 							}
 							while (dst.Doors.Length == 0);
 							freeexits[freeexits.Length - 1].NewDestRoom = dst;
@@ -194,7 +269,7 @@ namespace KH2DoorRando
 					}
 					else
 					{
-						Room[] r2 = rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0).ToArray();
+						Room[] r2 = (Room[])roomsavail.Clone();
 						Shuffle(r2, rand);
 						if (goaEnable.Checked)
 						{
@@ -219,7 +294,7 @@ namespace KH2DoorRando
 							from.NewDestRoom = dst;
 							from.NewDestDoor = dst.Doors[rand.Next(dst.Doors.Length)];
 						}
-						Door[] freeexits = rooms.Where(a => !a.CopyOf.HasValue).SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
+						Door[] freeexits = roomsavail.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
 						Shuffle(freeexits, rand);
 						for (int i = 0; i < freeexits.Length; i++)
 						{
@@ -231,66 +306,61 @@ namespace KH2DoorRando
 					}
 					var sb = new StringBuilder("Rooms = {");
 					sb.AppendLine();
-					foreach (var room in rooms.Where(a => !a.CopyOf.HasValue && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0))
+					foreach (var room in roomsavail)
 					{
-						if (room == goa)
-							goa.World = 4;
 						sb.AppendLine($"\t[0x{(room.ID << 8) | room.World:X4}] = {{");
 						foreach (var door in room.Doors)
-							sb.AppendLine($"\t\t[0x{(door.DestDoor << 16) | (door.DestRoom << 8) | door.DestWorld:X6}] = {{ w={door.NewDestRoom.World}, r={door.NewDestRoom.ID}, d={door.NewDestDoor.ID} }},");
-						if (room.ExtraDoors != null)
-							foreach (var door in room.ExtraDoors)
-							{
-								var d2 = room.Doors.Single(a => a.ID == door.CopyOf);
-								sb.AppendLine($"\t\t[0x{(door.DestDoor << 16) | (door.DestRoom << 8) | door.DestWorld:X6}] = {{ w={d2.NewDestRoom.World}, r={d2.NewDestRoom.ID}, d={d2.NewDestDoor.ID} }},");
-							}
+							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestRoom.World}, r={door.NewDestRoom.ID}, d={door.NewDestDoor.ID} }},");
+						foreach (var door in room.ExtraDoors)
+							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestRoom.World}, r={door.CopyOf.NewDestRoom.ID}, d={door.CopyOf.NewDestDoor.ID} }},");
 						sb.AppendLine("\t},");
-						if (room.Copies != null)
-							foreach (int id in room.Copies)
-							{
-								sb.AppendLine($"\t[0x{(id << 8) | room.World:X4}] = {{");
-								foreach (var door in room.Doors)
-									sb.AppendLine($"\t\t[0x{(door.DestDoor << 16) | (door.DestRoom << 8) | door.DestWorld:X6}] = {{ w={door.NewDestRoom.World}, r={door.NewDestRoom.ID}, d={door.NewDestDoor.ID} }},");
-								if (room.ExtraDoors != null)
-									foreach (var door in room.ExtraDoors)
-									{
-										var d2 = room.Doors.Single(a => a.ID == door.CopyOf);
-										sb.AppendLine($"\t\t[0x{(door.DestDoor << 16) | (door.DestRoom << 8) | door.DestWorld:X6}] = {{ w={d2.NewDestRoom.World}, r={d2.NewDestRoom.ID}, d={d2.NewDestDoor.ID} }},");
-									}
-								sb.AppendLine("\t},");
-							}
+						foreach (var rm2 in room.Copies)
+						{
+							sb.AppendLine($"\t[0x{(rm2.ID << 8) | room.World:X4}] = {{");
+							foreach (var door in room.Doors)
+								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestRoom.World}, r={door.NewDestRoom.ID}, d={door.NewDestDoor.ID} }},");
+							foreach (var door in room.ExtraDoors)
+								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestRoom.World}, r={door.CopyOf.NewDestRoom.ID}, d={door.CopyOf.NewDestDoor.ID} }},");
+							sb.AppendLine("\t},");
+						}
 					}
 					sb.AppendLine("}");
 					sb.Replace("{ w=18, r=7, d=1 }", "{ w=18, r=8, d=0 }");
 					File.WriteAllText(dlg.FileName, File.ReadAllText("DoorRando.template.lua").Replace("--REPLACE", sb.ToString()));
-					goa.World = 4;
-					using (var sw = File.CreateText(Path.Combine(Path.GetDirectoryName(dlg.FileName), "DoorSpoilers.csv")))
-					{
-						sw.Write("Rooms,");
-						foreach (var item in rooms.Where(a => !a.CopyOf.HasValue && a.Doors.Length > 0))
-							sw.Write("{0},", item.Name);
-						sw.WriteLine();
-						for (int i = 0; i < 7; i++)
-						{
-							sw.Write("Exit {0},", i + 1);
-							foreach (var item in rooms.Where(a => !a.CopyOf.HasValue && a.Doors.Length > 0))
-							{
-								if (item.Doors.Length > i)
-									sw.Write("{0} -> {1}", item.Doors[i].DestName, item.Doors[i].NewDestRoom.Name);
-								sw.Write(",");
-							}
-							sw.WriteLine();
-						}
-					}
-					trackerButton.Enabled = true;
+					spoilersButton.Enabled = trackerButton.Enabled = true;
 				}
 			}
 		}
 
 		private void trackerButton_Click(object sender, EventArgs e)
 		{
-			using (Tracker t = new Tracker())
-				t.ShowDialog(this);
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "json", FileName = "DoorRando.json", Filter = "JavaScript Object Notation|*.json", RestoreDirectory = true })
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+					File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(rooms, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+		}
+
+		private void spoilersButton_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "csv", FileName = "DoorRando.csv", Filter = "Comma Separated Values|*.csv", RestoreDirectory = true })
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+					using (var sw = File.CreateText(dlg.FileName))
+					{
+						sw.Write("Rooms,");
+						foreach (var item in roomsavail)
+							sw.Write("{0},", item.Name);
+						sw.WriteLine();
+						for (int i = 0; i < 7; i++)
+						{
+							sw.Write("Exit {0},", i + 1);
+							foreach (var item in roomsavail)
+							{
+								if (item.Doors.Length > i)
+									sw.Write("{0} -> {1}", item.Doors[i].DestRoom.Name, item.Doors[i].NewDestRoom.Name);
+								sw.Write(",");
+							}
+							sw.WriteLine();
+						}
+					}
 		}
 
 		private void dcEnable_CheckedChanged(object sender, EventArgs e)
@@ -301,6 +371,44 @@ namespace KH2DoorRando
 		}
 	}
 
+	public class Settings
+	{
+		public string Seed { get; set; } = string.Empty;
+		[DefaultValue(true)]
+		public bool TwoWayDoors { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableGoA { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableTT { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableHB { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableBC { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableOC { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableAG { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableLD { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableAW { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnablePL { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableAT { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableDC { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableHT { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnablePR { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableSP { get; set; } = true;
+		[DefaultValue(true)]
+		public bool EnableNW { get; set; } = true;
+		public bool CornerstoneHill { get; set; }
+	}
+
 	public class Room
 	{
 		public int World { get; set; }
@@ -308,13 +416,18 @@ namespace KH2DoorRando
 		public int ID { get; set; }
 		public string Name { get; set; }
 		[JsonProperty("Copy Of")]
-		public int? CopyOf { get; set; }
+		public int? CopyOfID { get; set; }
+		[JsonIgnore]
+		public Room CopyOf { get; set; }
 		public Door[] Doors { get; set; }
-		public Door[] Warps { get; set; }
+		public Warp[] Warps { get; set; }
 		public int[] Events { get; set; }
 		[JsonProperty("Extra Doors")]
 		public Door[] ExtraDoors { get; set; }
-		public int[] Copies { get; set; }
+		[JsonProperty("Copies")]
+		public int[] CopyIDs { get; set; }
+		[JsonIgnore]
+		public Room[] Copies { get; set; }
 	}
 
 	public class Door
@@ -324,20 +437,81 @@ namespace KH2DoorRando
 		[JsonProperty("Door ID")]
 		public int ID { get; set; }
 		[JsonProperty("Copy Of")]
-		public int CopyOf { get; set; }
-		[JsonProperty("Dest World")]
-		public int DestWorld { get; set; }
-		[JsonProperty("Dest Room")]
-		public int DestRoom { get; set; }
-		[JsonProperty("Dest Door")]
-		public int DestDoor { get; set; }
+		public int? CopyOfID { get; set; }
 		[JsonIgnore]
-		public string DestName { get; set; }
+		public Door CopyOf { get; set; }
+		private int destWorld;
+		[JsonProperty("Dest World")]
+		public int DestWorld
+		{
+			get => DestRoom?.World ?? destWorld;
+			set => destWorld = value;
+		}
+		private int destRoom;
+		[JsonProperty("Dest Room")]
+		public int DestRoomID
+		{
+			get => DestRoom?.ID ?? destRoom;
+			set => destRoom = value;
+		}
+		[JsonIgnore]
+		public Room DestRoom { get; set; }
+		private int destDoor;
+		[JsonProperty("Dest Door")]
+		public int DestDoorID
+		{
+			get => DestDoor?.ID ?? destDoor;
+			set => destDoor = value;
+		}
+		[JsonIgnore]
+		public Door DestDoor { get; set; }
+		private int newdestWorld;
+		[JsonProperty("New Dest World")]
+		public int NewDestWorld
+		{
+			get => NewDestRoom?.World ?? newdestWorld;
+			set => newdestWorld = value;
+		}
+		private int newdestRoom;
+		[JsonProperty("New Dest Room")]
+		public int NewDestRoomID
+		{
+			get => NewDestRoom?.ID ?? newdestRoom;
+			set => newdestRoom = value;
+		}
 		[JsonIgnore]
 		public Room NewDestRoom { get; set; }
+		private int newdestDoor;
+		[JsonProperty("New Dest Door")]
+		public int NewDestDoorID
+		{
+			get => NewDestDoor?.ID ?? newdestDoor;
+			set => newdestDoor = value;
+		}
 		[JsonIgnore]
 		public Door NewDestDoor { get; set; }
+		public bool? Used { get; set; }
+	}
+
+	public class Warp
+	{
 		[JsonIgnore]
-		public bool Used { get; set; }
+		public Room Room { get; set; }
+		private int destWorld;
+		[JsonProperty("Dest World")]
+		public int DestWorld
+		{
+			get => DestRoom?.World ?? destWorld;
+			set => destWorld = value;
+		}
+		private int destRoom;
+		[JsonProperty("Dest Room")]
+		public int DestRoomID
+		{
+			get => DestRoom?.ID ?? destRoom;
+			set => destRoom = value;
+		}
+		[JsonIgnore]
+		public Room DestRoom { get; set; }
 	}
 }

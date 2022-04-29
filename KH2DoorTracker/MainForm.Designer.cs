@@ -1,7 +1,7 @@
 ﻿
-namespace KH2DoorRando
+namespace KH2DoorTracker
 {
-	partial class Tracker
+	partial class MainForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -597,7 +597,7 @@ namespace KH2DoorRando
 			this.timer1.Interval = 500;
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
-			// Tracker
+			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -611,11 +611,9 @@ namespace KH2DoorRando
 			this.Controls.Add(groupBox1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
-			this.MinimizeBox = false;
-			this.Name = "Tracker";
-			this.ShowIcon = false;
-			this.ShowInTaskbar = false;
+			this.Name = "MainForm";
 			this.Text = "KH2 Door Tracker";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.Tracker_Load);
 			groupBox1.ResumeLayout(false);
 			groupBox2.ResumeLayout(false);

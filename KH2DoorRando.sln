@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KH2DoorRando", "KH2DoorRando\KH2DoorRando.csproj", "{3F9BDAB1-953A-466F-9992-73842052CEAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KH2DoorTracker", "KH2DoorTracker\KH2DoorTracker.csproj", "{38497C8B-BD50-4AEC-8527-18D017F6238C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,9 @@ Global
 		{3F9BDAB1-953A-466F-9992-73842052CEAA}.Debug|x64.Build.0 = Debug|x64
 		{3F9BDAB1-953A-466F-9992-73842052CEAA}.Release|x64.ActiveCfg = Release|x64
 		{3F9BDAB1-953A-466F-9992-73842052CEAA}.Release|x64.Build.0 = Release|x64
+		{38497C8B-BD50-4AEC-8527-18D017F6238C}.Debug|x64.ActiveCfg = Debug|x64
+		{38497C8B-BD50-4AEC-8527-18D017F6238C}.Debug|x64.Build.0 = Debug|x64
+		{38497C8B-BD50-4AEC-8527-18D017F6238C}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

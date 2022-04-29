@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace KH2DoorRando
+namespace KH2DoorTracker
 {
     public static class ProcessMemory
     {
