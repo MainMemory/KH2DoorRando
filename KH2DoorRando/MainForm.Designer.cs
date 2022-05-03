@@ -29,11 +29,11 @@ namespace KH2DoorRando
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.Label label1;
 			this.generateButton = new System.Windows.Forms.Button();
 			this.twoWayDoors = new System.Windows.Forms.CheckBox();
 			this.seedName = new System.Windows.Forms.TextBox();
-			this.cornerstoneHill = new System.Windows.Forms.CheckBox();
 			this.trackerButton = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.goaEnable = new System.Windows.Forms.CheckBox();
@@ -52,6 +52,10 @@ namespace KH2DoorRando
 			this.hbEnable = new System.Windows.Forms.CheckBox();
 			this.ttEnable = new System.Windows.Forms.CheckBox();
 			this.spoilersButton = new System.Windows.Forms.Button();
+			this.label2 = new System.Windows.Forms.Label();
+			this.modeSelector = new System.Windows.Forms.ComboBox();
+			this.modeInfo = new System.Windows.Forms.Label();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			label1 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -67,11 +71,12 @@ namespace KH2DoorRando
 			// 
 			// generateButton
 			// 
-			this.generateButton.Location = new System.Drawing.Point(54, 473);
+			this.generateButton.Location = new System.Drawing.Point(54, 469);
 			this.generateButton.Name = "generateButton";
 			this.generateButton.Size = new System.Drawing.Size(75, 23);
 			this.generateButton.TabIndex = 3;
 			this.generateButton.Text = "Randomize";
+			this.toolTip1.SetToolTip(this.generateButton, "Generates the randomized door settings and saves the Lua script.");
 			this.generateButton.UseVisualStyleBackColor = true;
 			this.generateButton.Click += new System.EventHandler(this.generateButton_Click);
 			// 
@@ -80,11 +85,13 @@ namespace KH2DoorRando
 			this.twoWayDoors.AutoSize = true;
 			this.twoWayDoors.Checked = true;
 			this.twoWayDoors.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.twoWayDoors.Location = new System.Drawing.Point(13, 46);
+			this.twoWayDoors.Location = new System.Drawing.Point(12, 65);
 			this.twoWayDoors.Name = "twoWayDoors";
 			this.twoWayDoors.Size = new System.Drawing.Size(103, 17);
 			this.twoWayDoors.TabIndex = 4;
 			this.twoWayDoors.Text = "Two-Way Doors";
+			this.toolTip1.SetToolTip(this.twoWayDoors, "If enabled, going through the door you entered a room from will take you back to " +
+        "the previous room.");
 			this.twoWayDoors.UseVisualStyleBackColor = true;
 			// 
 			// seedName
@@ -93,25 +100,18 @@ namespace KH2DoorRando
 			this.seedName.Name = "seedName";
 			this.seedName.Size = new System.Drawing.Size(238, 20);
 			this.seedName.TabIndex = 5;
-			// 
-			// cornerstoneHill
-			// 
-			this.cornerstoneHill.AutoSize = true;
-			this.cornerstoneHill.Location = new System.Drawing.Point(12, 450);
-			this.cornerstoneHill.Name = "cornerstoneHill";
-			this.cornerstoneHill.Size = new System.Drawing.Size(136, 17);
-			this.cornerstoneHill.TabIndex = 6;
-			this.cornerstoneHill.Text = "GoA -> Cornerstone Hill";
-			this.cornerstoneHill.UseVisualStyleBackColor = true;
+			this.toolTip1.SetToolTip(this.seedName, "Enter any string here to use as the basis for the randomization. Leave blank to c" +
+        "hoose a seed at random.");
 			// 
 			// trackerButton
 			// 
 			this.trackerButton.Enabled = false;
-			this.trackerButton.Location = new System.Drawing.Point(135, 473);
+			this.trackerButton.Location = new System.Drawing.Point(135, 469);
 			this.trackerButton.Name = "trackerButton";
 			this.trackerButton.Size = new System.Drawing.Size(75, 23);
 			this.trackerButton.TabIndex = 7;
 			this.trackerButton.Text = "Save Seed";
+			this.toolTip1.SetToolTip(this.trackerButton, "Save the seed file, to edit manually, or for use with the tracker.");
 			this.trackerButton.UseVisualStyleBackColor = true;
 			this.trackerButton.Click += new System.EventHandler(this.trackerButton_Click);
 			// 
@@ -134,7 +134,7 @@ namespace KH2DoorRando
 			this.groupBox1.Controls.Add(this.bcEnable);
 			this.groupBox1.Controls.Add(this.hbEnable);
 			this.groupBox1.Controls.Add(this.ttEnable);
-			this.groupBox1.Location = new System.Drawing.Point(13, 70);
+			this.groupBox1.Location = new System.Drawing.Point(11, 89);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
 			this.groupBox1.Size = new System.Drawing.Size(170, 374);
@@ -153,7 +153,6 @@ namespace KH2DoorRando
 			this.goaEnable.TabIndex = 14;
 			this.goaEnable.Text = "Garden of Assemblage";
 			this.goaEnable.UseVisualStyleBackColor = true;
-			this.goaEnable.CheckedChanged += new System.EventHandler(this.dcEnable_CheckedChanged);
 			// 
 			// atEnable
 			// 
@@ -226,7 +225,6 @@ namespace KH2DoorRando
 			this.dcEnable.TabIndex = 8;
 			this.dcEnable.Text = "Disney Castle";
 			this.dcEnable.UseVisualStyleBackColor = true;
-			this.dcEnable.CheckedChanged += new System.EventHandler(this.dcEnable_CheckedChanged);
 			// 
 			// plEnable
 			// 
@@ -327,13 +325,51 @@ namespace KH2DoorRando
 			// spoilersButton
 			// 
 			this.spoilersButton.Enabled = false;
-			this.spoilersButton.Location = new System.Drawing.Point(216, 473);
+			this.spoilersButton.Location = new System.Drawing.Point(216, 469);
 			this.spoilersButton.Name = "spoilersButton";
 			this.spoilersButton.Size = new System.Drawing.Size(75, 23);
 			this.spoilersButton.TabIndex = 9;
 			this.spoilersButton.Text = "Spoilers";
+			this.toolTip1.SetToolTip(this.spoilersButton, "Generate a spoiler spreadsheet listing all the doors and where they lead to.");
 			this.spoilersButton.UseVisualStyleBackColor = true;
 			this.spoilersButton.Click += new System.EventHandler(this.spoilersButton_Click);
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(12, 41);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(37, 13);
+			this.label2.TabIndex = 10;
+			this.label2.Text = "Mode:";
+			// 
+			// modeSelector
+			// 
+			this.modeSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.modeSelector.FormattingEnabled = true;
+			this.modeSelector.Items.AddRange(new object[] {
+            "Single Path",
+            "Two Paths",
+            "Seven Paths",
+            "Branches",
+            "Separate Worlds",
+            "Wild"});
+			this.modeSelector.Location = new System.Drawing.Point(55, 38);
+			this.modeSelector.Name = "modeSelector";
+			this.modeSelector.Size = new System.Drawing.Size(211, 21);
+			this.modeSelector.TabIndex = 11;
+			this.toolTip1.SetToolTip(this.modeSelector, "Controls how the doors are connected during randomization. Hover over the [?] for" +
+        " information on each mode.");
+			this.modeSelector.SelectedIndexChanged += new System.EventHandler(this.modeSelector_SelectedIndexChanged);
+			// 
+			// modeInfo
+			// 
+			this.modeInfo.AutoSize = true;
+			this.modeInfo.Location = new System.Drawing.Point(272, 41);
+			this.modeInfo.Name = "modeInfo";
+			this.modeInfo.Size = new System.Drawing.Size(19, 13);
+			this.modeInfo.TabIndex = 12;
+			this.modeInfo.Text = "[?]";
 			// 
 			// MainForm
 			// 
@@ -342,10 +378,12 @@ namespace KH2DoorRando
 			this.AutoSize = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.ClientSize = new System.Drawing.Size(315, 579);
+			this.Controls.Add(this.modeInfo);
+			this.Controls.Add(this.modeSelector);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.spoilersButton);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.trackerButton);
-			this.Controls.Add(this.cornerstoneHill);
 			this.Controls.Add(this.seedName);
 			this.Controls.Add(this.twoWayDoors);
 			this.Controls.Add(this.generateButton);
@@ -367,7 +405,6 @@ namespace KH2DoorRando
 		private System.Windows.Forms.Button generateButton;
 		private System.Windows.Forms.CheckBox twoWayDoors;
 		private System.Windows.Forms.TextBox seedName;
-		private System.Windows.Forms.CheckBox cornerstoneHill;
 		private System.Windows.Forms.Button trackerButton;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.CheckBox ttEnable;
@@ -386,5 +423,9 @@ namespace KH2DoorRando
 		private System.Windows.Forms.CheckBox atEnable;
 		private System.Windows.Forms.CheckBox goaEnable;
 		private System.Windows.Forms.Button spoilersButton;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.ComboBox modeSelector;
+		private System.Windows.Forms.Label modeInfo;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }

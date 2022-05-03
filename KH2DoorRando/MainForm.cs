@@ -17,6 +17,32 @@ namespace KH2DoorRando
 			InitializeComponent();
 		}
 
+		readonly string[] modeDescs =
+		{
+			"All rooms in the game will be connected to each other as a single group.",
+			"Each door leading out of the GoA will lead to a separate set of rooms.",
+			"One of the doors leading from the GoA will lead to Cornerstone Hill.\nThe six other doors in Cornerstone Hill will all lead to separate paths.\nThe other door from GoA will also lead to its own path.",
+			"Rooms with more than two exits will cause a split in the path, leading to a more complex arrangement.",
+			"All the doors in each world will be randomized within that world.\nDisables GoA, 100AW, and Atlantica.",
+			"Any door can connect to any other door. Probably won't be completable."
+		};
+		readonly int[] worldids =
+		{
+			2,
+			4,
+			5,
+			6,
+			7,
+			8,
+			9,
+			10,
+			11,
+			12,
+			14,
+			16,
+			17,
+			18
+		};
 		Settings settings;
 		Room[] rooms, roomsavail;
 		Dictionary<int, Dictionary<int, Room>> roomdict = new Dictionary<int, Dictionary<int, Room>>();
@@ -52,10 +78,10 @@ namespace KH2DoorRando
 				prEnable.Checked = settings.EnablePR;
 				spEnable.Checked = settings.EnableSP;
 				nwEnable.Checked = settings.EnableNW;
-				cornerstoneHill.Checked = settings.CornerstoneHill;
 			}
 			else
 				settings = new Settings();
+			modeSelector.SelectedIndex = settings.Mode;
 			rooms = JsonConvert.DeserializeObject<Room[]>(File.ReadAllText("Door_Rando.json"));
 			foreach (Room r in rooms)
 			{
@@ -104,6 +130,7 @@ namespace KH2DoorRando
 		private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
 		{
 			settings.Seed = seedName.Text;
+			settings.Mode = modeSelector.SelectedIndex;
 			settings.TwoWayDoors = twoWayDoors.Checked;
 			settings.EnableGoA = goaEnable.Checked;
 			settings.EnableTT = ttEnable.Checked;
@@ -120,8 +147,32 @@ namespace KH2DoorRando
 			settings.EnablePR = prEnable.Checked;
 			settings.EnableSP = spEnable.Checked;
 			settings.EnableNW = nwEnable.Checked;
-			settings.CornerstoneHill = cornerstoneHill.Checked;
 			File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settings));
+		}
+
+		private void modeSelector_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			switch (modeSelector.SelectedIndex)
+			{
+				case 1:
+					atEnable.Enabled = awEnable.Enabled = true;
+					goaEnable.Enabled = false;
+					goaEnable.Checked = true;
+					break;
+				case 2:
+					atEnable.Enabled = awEnable.Enabled = true;
+					dcEnable.Enabled = goaEnable.Enabled = false;
+					dcEnable.Checked = goaEnable.Checked = true;
+					break;
+				case 4:
+					atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = false;
+					atEnable.Checked = awEnable.Checked = goaEnable.Checked = false;
+					break;
+				default:
+					atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = true;
+					break;
+			}
+			toolTip1.SetToolTip(modeInfo, modeDescs[modeSelector.SelectedIndex]);
 		}
 
 		private static string Base36(long value)
@@ -141,11 +192,11 @@ namespace KH2DoorRando
 
 		private void generateButton_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog dlg = new SaveFileDialog() {  DefaultExt = "lua", FileName = "DoorRando.lua", Filter = "Lua scripts|*.lua", RestoreDirectory = true})
+			using (SaveFileDialog dlg = new SaveFileDialog() {  DefaultExt = "lua", FileName = "F266B00B.DoorRando.lua", Filter = "Lua scripts|*.lua", RestoreDirectory = true})
 			{
 				string scriptpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"KINGDOM HEARTS HD 1.5+2.5 ReMIX\scripts\kh2");
 				if (Directory.Exists(scriptpath))
-					dlg.InitialDirectory = scriptpath;
+					dlg.CustomPlaces.Add(scriptpath);
 				if (dlg.ShowDialog(this)== DialogResult.OK)
 				{
 					List<int> ignoreworlds = new List<int>();
@@ -188,7 +239,7 @@ namespace KH2DoorRando
 						foreach (Door d in r.Doors)
 							if (ignoreworlds.Contains(r.World))
 							{
-								d.NewDestRoom = roomdict[d.DestWorld][d.DestRoomID];
+								d.NewDestRoom = d.DestRoom;
 								if (d.NewDestRoom.CopyOf != null)
 									d.NewDestRoom = d.NewDestRoom.CopyOf;
 								d.Used = true;
@@ -204,123 +255,296 @@ namespace KH2DoorRando
 					if (seedName.TextLength == 0)
 						seedName.Text = Base36(DateTime.Now.Ticks) + Base36((uint)Environment.TickCount);
 					Random rand = new Random(seedName.Text.GetHashCode());
-					if (twoWayDoors.Checked)
+					switch (modeSelector.SelectedIndex)
 					{
-						Room[] multiexit = roomsavail.Where(a => a.Doors.Length > 1).ToArray();
-						Shuffle(multiexit, rand);
-						if (goaEnable.Checked)
-						{
-							multiexit[Array.IndexOf(multiexit, goa)] = multiexit[0];
-							multiexit[0] = goa;
-						}
-						if (cornerstoneHill.Checked)
-						{
-							multiexit[Array.IndexOf(multiexit, roomdict[13][0])] = multiexit[1];
-							multiexit[1] = roomdict[13][0];
-						}
-						for (int i = 0; i < multiexit.Length; i++)
-						{
-							Room src = multiexit[i];
-							Room dst = multiexit[(i + 1) % multiexit.Length];
-							List<Door> exits = src.Doors.Where(a => a.NewDestRoom == null).ToList();
-							List<Door> ents = dst.Doors.Where(a => a.NewDestRoom == null).ToList();
-							Door from = exits[rand.Next(exits.Count)];
-							Door to = ents[rand.Next(ents.Count)];
-							from.NewDestRoom = dst;
-							from.NewDestDoor = to;
-							to.NewDestRoom = src;
-							to.NewDestDoor = from;
-						}
-						Door[] freeexits = multiexit.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
-						Shuffle(freeexits, rand);
-						Room[] singles = roomsavail.Except(multiexit).ToArray();
-						Shuffle(singles, rand);
-						if (singles.Length > freeexits.Length)
-						{
-							MessageBox.Show(this, "Randomization failed! Not enough free exits for single-exit rooms!", "Randomization Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-							return;
-						}
-						for (int i = 0; i < singles.Length; i++)
-						{
-							freeexits[i].NewDestRoom = singles[i];
-							freeexits[i].NewDestDoor = singles[i].Doors[0];
-							singles[i].Doors[0].NewDestRoom = freeexits[i].Room;
-							singles[i].Doors[0].NewDestDoor = freeexits[i];
-						}
-						freeexits = freeexits.Skip(singles.Length).ToArray();
-						for (int i = 0; i < freeexits.Length - 1; i += 2)
-						{
-							freeexits[i].NewDestRoom = freeexits[i + 1].Room;
-							freeexits[i].NewDestDoor = freeexits[i + 1];
-							freeexits[i + 1].NewDestRoom = freeexits[i].Room;
-							freeexits[i + 1].NewDestDoor = freeexits[i];
-						}
-						if (freeexits.Length % 2 == 1)
-						{
-							Room dst;
-							do
+						case 0:
+							if (!RandomizeRooms(rand, new List<Room>(roomsavail), true))
+								return;
+							break;
+						case 1:
 							{
-								dst = roomsavail[rand.Next(roomsavail.Length)];
+								Door[] goadoors = goa.Doors;
+								goa.Doors = new Door[0];
+								List<Room>[] roomlists = new List<Room>[2];
+								if (twoWayDoors.Checked)
+								{
+									Room[] multiexit = roomsavail.Where(a => a.Doors.Length > 1).ToArray();
+									Shuffle(multiexit, rand);
+									List<Room> me2 = new List<Room>(multiexit);
+									int split = rand.Next(1, multiexit.Length);
+									roomlists[0] = me2.GetRange(0, split);
+									roomlists[1] = me2.GetRange(split, me2.Count - split);
+									Room[] singles = roomsavail.Where(a => a.Doors.Length == 1).ToArray();
+									Shuffle(singles, rand);
+									List<Room> singlelist = new List<Room>(singles);
+									int[] freecnt = new int[2];
+									for (int i = 0; i < 2; i++)
+									{
+										freecnt[i] = roomlists[i].Sum(a => Math.Max(a.Doors.Length - 2, 0)) + 1;
+										if (freecnt[i] > 0)
+										{
+											int exitcnt = freecnt[i] / singles.Length;
+											roomlists[i].AddRange(singlelist.GetRange(0, exitcnt));
+											singlelist.RemoveRange(0, exitcnt);
+											freecnt[i] -= exitcnt;
+										}
+									}
+									while (singlelist.Count > 0)
+									{
+										int i = rand.Next(2);
+										if (freecnt[i] > 0)
+										{
+											roomlists[i].Add(singlelist[0]);
+											singlelist.RemoveAt(0);
+											--freecnt[i];
+										}
+										if (singlelist.Count > 0 && freecnt.All(a => a == 0))
+										{
+											goa.Doors = goadoors;
+											MessageBox.Show(this, "Randomization failed! Not enough free exits for single-exit rooms!", "Randomization Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+											return;
+										}
+									}
+								}
+								else
+								{
+									Room[] multiexit = (Room[])roomsavail.Clone();
+									Shuffle(multiexit, rand);
+									List<Room> me2 = new List<Room>(multiexit);
+									me2.Remove(goa);
+									int split = rand.Next(1, multiexit.Length);
+									roomlists[0] = me2.GetRange(0, split);
+									roomlists[1] = me2.GetRange(split, me2.Count - split);
+								}
+								for (int i = 0; i < 2; i++)
+								{
+									goa.Doors = new[] { goadoors[i] };
+									if (!RandomizeRooms(rand, roomlists[i], false, goa))
+									{
+										goa.Doors = goadoors;
+										return;
+									}
+								}
+								goa.Doors = goadoors;
 							}
-							while (dst.Doors.Length == 0);
-							freeexits[freeexits.Length - 1].NewDestRoom = dst;
-							freeexits[freeexits.Length - 1].NewDestDoor = dst.Doors[rand.Next(dst.Doors.Length)];
-						}
-					}
-					else
-					{
-						Room[] r2 = (Room[])roomsavail.Clone();
-						Shuffle(r2, rand);
-						if (goaEnable.Checked)
-						{
-							r2[Array.IndexOf(r2, goa)] = r2[0];
-							r2[0] = goa;
-						}
-						if (cornerstoneHill.Checked)
-						{
-							r2[Array.IndexOf(r2, roomdict[13][0])] = r2[1];
-							r2[1] = roomdict[13][0];
-						}
-						for (int i = 0; i < r2.Length; i++)
-						{
-							Room src = r2[i];
-							Room dst = r2[(i + 1) % r2.Length];
-							Door from;
-							do
+							break;
+						case 2:
 							{
-								from = src.Doors[rand.Next(src.Doors.Length)];
+								Door[] goadoors = goa.Doors;
+								goa.Doors = new Door[0];
+								Room ch = roomdict[13][0];
+								Door[] chdoors = ch.Doors;
+								ch.Doors = new Door[0];
+								goadoors[1].NewDestRoom = ch;
+								goadoors[1].NewDestDoor = chdoors[0];
+								chdoors[0].NewDestRoom = goa;
+								chdoors[0].NewDestDoor = goadoors[1];
+								List<Room>[] roomlists = new List<Room>[7];
+								if (twoWayDoors.Checked)
+								{
+									Room[] multiexit = roomsavail.Where(a => a.Doors.Length > 1).ToArray();
+									Shuffle(multiexit, rand);
+									List<Room> me2 = new List<Room>(multiexit);
+									int avg = me2.Count / 7;
+									for (int i = 0; i < 6; i++)
+									{
+										int split = Math.Min(me2.Count - (6 - i), Math.Max(1, avg + (rand.Next(avg) - (avg / 2))));
+										roomlists[i] = me2.GetRange(0, split);
+										me2.RemoveRange(0, split);
+									}
+									roomlists[6] = me2;
+									Room[] singles = roomsavail.Where(a => a.Doors.Length == 1).ToArray();
+									Shuffle(singles, rand);
+									List<Room> singlelist = new List<Room>(singles);
+									int[] freecnt = new int[7];
+									for (int i = 0; i < 7; i++)
+									{
+										freecnt[i] = roomlists[i].Sum(a => Math.Max(a.Doors.Length - 2, 0)) + 1;
+										if (freecnt[i] > 0)
+										{
+											int exitcnt = freecnt[i] / singles.Length;
+											roomlists[i].AddRange(singlelist.GetRange(0, exitcnt));
+											singlelist.RemoveRange(0, exitcnt);
+											freecnt[i] -= exitcnt;
+										}
+									}
+									while (singlelist.Count > 0)
+									{
+										int i = rand.Next(7);
+										if (freecnt[i] > 0)
+										{
+											roomlists[i].Add(singlelist[0]);
+											singlelist.RemoveAt(0);
+											--freecnt[i];
+										}
+										if (singlelist.Count > 0 && freecnt.All(a => a == 0))
+										{
+											goa.Doors = goadoors;
+											ch.Doors = chdoors;
+											MessageBox.Show(this, "Randomization failed! Not enough free exits for single-exit rooms!", "Randomization Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+											return;
+										}
+									}
+								}
+								else
+								{
+									Room[] multiexit = (Room[])roomsavail.Clone();
+									Shuffle(multiexit, rand);
+									List<Room> me2 = new List<Room>(multiexit);
+									me2.Remove(goa);
+									me2.Remove(ch);
+									int avg = me2.Count / 7;
+									for (int i = 0; i < 6; i++)
+									{
+										int split = Math.Min(me2.Count - (6 - i), Math.Max(1, avg + (rand.Next(avg) - (avg / 2))));
+										roomlists[i] = me2.GetRange(0, split);
+										me2.RemoveRange(0, split);
+									}
+									roomlists[6] = me2;
+								}
+								for (int i = 0; i < 6; i++)
+								{
+									ch.Doors = new[] { chdoors[i + 1] };
+									if (!RandomizeRooms(rand, roomlists[i], false, ch))
+									{
+										goa.Doors = goadoors;
+										ch.Doors = chdoors;
+										return;
+									}
+								}
+								goa.Doors = new[] { goadoors[0] };
+								if (!RandomizeRooms(rand, roomlists[6], false, goa))
+								{
+									goa.Doors = goadoors;
+									ch.Doors = chdoors;
+									return;
+								}
+								goa.Doors = goadoors;
+								ch.Doors = chdoors;
 							}
-							while (from.NewDestRoom != null);
-							from.NewDestRoom = dst;
-							from.NewDestDoor = dst.Doors[rand.Next(dst.Doors.Length)];
-						}
-						Door[] freeexits = roomsavail.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
-						Shuffle(freeexits, rand);
-						for (int i = 0; i < freeexits.Length; i++)
-						{
-							Door src = freeexits[i];
-							Door dst = freeexits[(i + 1) % freeexits.Length];
-							src.NewDestRoom = dst.Room;
-							src.NewDestDoor = dst;
-						}
+							break;
+						case 3:
+							if (twoWayDoors.Checked)
+							{
+								Room[] forks = roomsavail.Where(a => a.Doors.Length > 2).ToArray();
+								List<Door> doorlist = new List<Door>(forks.Length * 2 - 2);
+								foreach (var item in forks)
+									doorlist.Add(item.Doors[rand.Next(item.Doors.Length)]);
+								while (doorlist.Count < forks.Length * 2 - 2)
+								{
+									Room r = forks[rand.Next(forks.Length)];
+									Door d = r.Doors[rand.Next(r.Doors.Length)];
+									if (!doorlist.Contains(d))
+										doorlist.Add(d);
+								}
+								Door[] doors = doorlist.ToArray();
+								Shuffle(doors, rand);
+								for (int i = 0; i < doors.Length; i += 2)
+									while (doors[i].Room == doors[i + 1].Room)
+									{
+										int j = rand.Next(doorlist.Count);
+										if (doors[j].Room != doors[i].Room && doors[j ^ 1].Room != doors[i].Room)
+										{
+											Door d = doors[i + 1];
+											doors[i + 1] = doors[j];
+											doors[j] = d;
+										}
+									}
+								doorlist = new List<Door>(doors);
+								while (doorlist.Count > 0)
+								{
+									doorlist[0].NewDestRoom = doorlist[1].Room;
+									doorlist[0].NewDestDoor = doorlist[1];
+									doorlist[1].NewDestRoom = doorlist[0].Room;
+									doorlist[1].NewDestDoor = doorlist[0];
+									doorlist.RemoveRange(0, 2);
+								}
+								doors = forks.SelectMany(a => a.Doors.Where(b => b.NewDestDoor == null)).ToArray();
+								Door[] singles = roomsavail.Where(a => a.Doors.Length == 1).Select(a => a.Doors[0]).ToArray();
+								if (singles.Length > doors.Length)
+								{
+									MessageBox.Show(this, "Randomization failed! Not enough free exits for single-exit rooms!", "Randomization Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+									return;
+								}
+								Shuffle(doors, rand);
+								Shuffle(singles, rand);
+								for (int i = 0; i < singles.Length; i++)
+								{
+									doors[i].NewDestRoom = singles[i].Room;
+									doors[i].NewDestDoor = singles[i];
+									singles[i].NewDestRoom = doors[i].Room;
+									singles[i].NewDestDoor = doors[i];
+								}
+								doorlist = new List<Door>(doors.Skip(singles.Length));
+								while (doorlist.Count > 1)
+								{
+									doorlist[0].NewDestRoom = doorlist[1].Room;
+									doorlist[0].NewDestDoor = doorlist[1];
+									doorlist[1].NewDestRoom = doorlist[0].Room;
+									doorlist[1].NewDestDoor = doorlist[0];
+									doorlist.RemoveRange(0, 2);
+								}
+								if (doorlist.Count == 1)
+								{
+									doorlist[0].NewDestRoom = doorlist[0].Room;
+									doorlist[0].NewDestDoor = doorlist[0];
+								}
+								doors = forks.SelectMany(a => a.Doors).ToArray();
+								foreach (Room r in roomsavail.Where(a => a.Doors.Length == 2))
+								{
+									Door d = doors[rand.Next(doors.Length)];
+									Door d2 = d.NewDestDoor;
+									d.NewDestRoom = r;
+									d.NewDestDoor = r.Doors[0];
+									r.Doors[0].NewDestRoom = d.Room;
+									r.Doors[0].NewDestDoor = d;
+									d2.NewDestRoom = r;
+									d2.NewDestDoor = r.Doors[1];
+									r.Doors[1].NewDestRoom = d2.Room;
+									r.Doors[1].NewDestDoor = d2;
+								}
+							}
+							else if(!RandomizeRooms(rand, new List<Room>(roomsavail), false))
+								return;
+							break;
+						case 4:
+							foreach (int w in worldids.Except(ignoreworlds))
+							{
+								List<Room> wr = roomsavail.Where(a => a.World == w).ToList();
+								if (w == 12)
+									wr.AddRange(roomsavail.Where(a => a.World == 13));
+								if (!RandomizeRooms(rand, wr, false))
+									return;
+							}
+							break;
+						case 5:
+							{
+								Door[] alldoors = roomsavail.SelectMany(a => a.Doors).ToArray();
+								foreach (Door door in alldoors)
+								{
+									door.NewDestDoor = alldoors[rand.Next(alldoors.Length)];
+									door.NewDestRoom = door.NewDestDoor.Room;
+								}
+							}
+							break;
 					}
 					var sb = new StringBuilder("Rooms = {");
 					sb.AppendLine();
-					foreach (var room in roomsavail)
+					foreach (var room in roomsavail.Where(a => a.Doors.Any(b => b.NewDestDoor != b.DestDoor)))
 					{
 						sb.AppendLine($"\t[0x{(room.ID << 8) | room.World:X4}] = {{");
-						foreach (var door in room.Doors)
-							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestRoom.World}, r={door.NewDestRoom.ID}, d={door.NewDestDoor.ID} }},");
-						foreach (var door in room.ExtraDoors)
-							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestRoom.World}, r={door.CopyOf.NewDestRoom.ID}, d={door.CopyOf.NewDestDoor.ID} }},");
+						foreach (var door in room.Doors.Where(a => a.NewDestDoor != a.DestDoor))
+							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestWorld}, r={door.NewDestRoomID}, d={door.NewDestDoorID} }},");
+						foreach (var door in room.ExtraDoors.Where(a => a.CopyOf.NewDestDoor != a.CopyOf.DestDoor))
+							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestWorld}, r={door.CopyOf.NewDestRoomID}, d={door.CopyOf.NewDestDoorID} }},");
 						sb.AppendLine("\t},");
 						foreach (var rm2 in room.Copies)
 						{
 							sb.AppendLine($"\t[0x{(rm2.ID << 8) | room.World:X4}] = {{");
-							foreach (var door in room.Doors)
-								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestRoom.World}, r={door.NewDestRoom.ID}, d={door.NewDestDoor.ID} }},");
-							foreach (var door in room.ExtraDoors)
-								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestRoom.World}, r={door.CopyOf.NewDestRoom.ID}, d={door.CopyOf.NewDestDoor.ID} }},");
+							foreach (var door in room.Doors.Where(a => a.NewDestDoor != a.DestDoor))
+								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestWorld}, r={door.NewDestRoomID}, d={door.NewDestDoorID} }},");
+							foreach (var door in room.ExtraDoors.Where(a => a.CopyOf.NewDestDoor != a.CopyOf.DestDoor))
+								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestWorld}, r={door.CopyOf.NewDestRoomID}, d={door.CopyOf.NewDestDoorID} }},");
 							sb.AppendLine("\t},");
 						}
 					}
@@ -330,6 +554,103 @@ namespace KH2DoorRando
 					spoilersButton.Enabled = trackerButton.Enabled = true;
 				}
 			}
+		}
+
+		private bool RandomizeRooms(Random rand, List<Room> roomset, bool connectends, Room startroom = null)
+		{
+			if (twoWayDoors.Checked)
+			{
+				Room[] multiexit = roomset.Where(a => a.Doors.Length > 1).ToArray();
+				Shuffle(multiexit, rand);
+				for (int i = 0; i < (connectends ? multiexit.Length : multiexit.Length - 1); i++)
+				{
+					Room src = multiexit[i];
+					Room dst = multiexit[(i + 1) % multiexit.Length];
+					List<Door> exits = src.Doors.Where(a => a.NewDestRoom == null).ToList();
+					List<Door> ents = dst.Doors.Where(a => a.NewDestRoom == null).ToList();
+					Door from = exits[rand.Next(exits.Count)];
+					Door to = ents[rand.Next(ents.Count)];
+					from.NewDestRoom = dst;
+					from.NewDestDoor = to;
+					to.NewDestRoom = src;
+					to.NewDestDoor = from;
+				}
+				if (startroom != null)
+				{
+					Door from = startroom.Doors[0];
+					Door to = multiexit[0].Doors.First(a => a.NewDestRoom == null);
+					from.NewDestRoom = multiexit[0];
+					from.NewDestDoor = to;
+					to.NewDestRoom = startroom;
+					to.NewDestDoor = from;
+				}
+				Door[] freeexits = multiexit.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
+				Shuffle(freeexits, rand);
+				Room[] singles = roomset.Except(multiexit).ToArray();
+				Shuffle(singles, rand);
+				if (singles.Length > freeexits.Length)
+				{
+					MessageBox.Show(this, "Randomization failed! Not enough free exits for single-exit rooms!", "Randomization Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+				for (int i = 0; i < singles.Length; i++)
+				{
+					freeexits[i].NewDestRoom = singles[i];
+					freeexits[i].NewDestDoor = singles[i].Doors[0];
+					singles[i].Doors[0].NewDestRoom = freeexits[i].Room;
+					singles[i].Doors[0].NewDestDoor = freeexits[i];
+				}
+				freeexits = freeexits.Skip(singles.Length).ToArray();
+				for (int i = 0; i < freeexits.Length - 1; i += 2)
+				{
+					freeexits[i].NewDestRoom = freeexits[i + 1].Room;
+					freeexits[i].NewDestDoor = freeexits[i + 1];
+					freeexits[i + 1].NewDestRoom = freeexits[i].Room;
+					freeexits[i + 1].NewDestDoor = freeexits[i];
+				}
+				if (freeexits.Length % 2 == 1)
+				{
+					freeexits[freeexits.Length - 1].NewDestRoom = freeexits[freeexits.Length - 1].Room;
+					freeexits[freeexits.Length - 1].NewDestDoor = freeexits[freeexits.Length - 1];
+				}
+			}
+			else
+			{
+				Room[] r2 = roomset.ToArray();
+				Shuffle(r2, rand);
+				for (int i = 0; i < (connectends ? r2.Length : r2.Length - 1); i++)
+				{
+					Room src = r2[i];
+					Room dst = r2[(i + 1) % r2.Length];
+					Door from;
+					do
+					{
+						from = src.Doors[rand.Next(src.Doors.Length)];
+					}
+					while (from.NewDestRoom != null);
+					from.NewDestRoom = dst;
+					from.NewDestDoor = dst.Doors[rand.Next(dst.Doors.Length)];
+				}
+				if (startroom != null)
+				{
+					Door from = startroom.Doors[0];
+					from.NewDestRoom = r2[0];
+					from.NewDestDoor = r2[0].Doors.First(a => a.NewDestRoom != null);
+					Door to = r2[r2.Length - 1].Doors.First(a => a.NewDestRoom != null);
+					to.NewDestRoom = startroom;
+					to.NewDestDoor = startroom.Doors[0];
+				}
+				Door[] freeexits = roomset.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
+				Shuffle(freeexits, rand);
+				for (int i = 0; i < (startroom == null ? freeexits.Length : freeexits.Length - 1); i++)
+				{
+					Door src = freeexits[i];
+					Door dst = freeexits[(i + 1) % freeexits.Length];
+					src.NewDestRoom = dst.Room;
+					src.NewDestDoor = dst;
+				}
+			}
+			return true;
 		}
 
 		private void trackerButton_Click(object sender, EventArgs e)
@@ -362,18 +683,12 @@ namespace KH2DoorRando
 						}
 					}
 		}
-
-		private void dcEnable_CheckedChanged(object sender, EventArgs e)
-		{
-			cornerstoneHill.Enabled = dcEnable.Checked && goaEnable.Checked;
-			if (!dcEnable.Checked || !goaEnable.Checked)
-				cornerstoneHill.Checked = false;
-		}
 	}
 
 	public class Settings
 	{
 		public string Seed { get; set; } = string.Empty;
+		public int Mode { get; set; }
 		[DefaultValue(true)]
 		public bool TwoWayDoors { get; set; } = true;
 		[DefaultValue(true)]
@@ -406,7 +721,6 @@ namespace KH2DoorRando
 		public bool EnableSP { get; set; } = true;
 		[DefaultValue(true)]
 		public bool EnableNW { get; set; } = true;
-		public bool CornerstoneHill { get; set; }
 	}
 
 	public class Room
