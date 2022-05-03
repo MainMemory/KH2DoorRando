@@ -39,6 +39,11 @@ end
 --REPLACE
 
 function _OnFrame()
+--Disable all door blocks
+for i=0,1023,8 do
+	WriteLong(Save+0x1EF8+i,0)
+end
+--Check for doors and swap them
 local room = Rooms[ReadShort(Now+0x30)]
 if room ~= nil then
 	local door = room[ReadInt(Now+0x20) & 0xFFFFFF]
