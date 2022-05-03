@@ -34,7 +34,7 @@ namespace KH2DoorTracker
 			System.Windows.Forms.GroupBox groupBox2;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-			this.currentRoom = new System.Windows.Forms.Label();
+			this.currentRoom = new System.Windows.Forms.LinkLabel();
 			this.door7 = new System.Windows.Forms.Label();
 			this.door6 = new System.Windows.Forms.Label();
 			this.door5 = new System.Windows.Forms.Label();
@@ -42,25 +42,25 @@ namespace KH2DoorTracker
 			this.door3 = new System.Windows.Forms.Label();
 			this.door2 = new System.Windows.Forms.Label();
 			this.door1 = new System.Windows.Forms.Label();
-			this.nwEvent = new System.Windows.Forms.Label();
-			this.spEvent = new System.Windows.Forms.Label();
-			this.prEvent = new System.Windows.Forms.Label();
-			this.htEvent = new System.Windows.Forms.Label();
-			this.dcEvent = new System.Windows.Forms.Label();
-			this.plEvent = new System.Windows.Forms.Label();
+			this.nwEvent = new System.Windows.Forms.LinkLabel();
+			this.spEvent = new System.Windows.Forms.LinkLabel();
+			this.prEvent = new System.Windows.Forms.LinkLabel();
+			this.htEvent = new System.Windows.Forms.LinkLabel();
+			this.dcEvent = new System.Windows.Forms.LinkLabel();
+			this.plEvent = new System.Windows.Forms.LinkLabel();
 			this.label14 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
 			this.label12 = new System.Windows.Forms.Label();
 			this.label11 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
-			this.awEvent = new System.Windows.Forms.Label();
-			this.ldEvent = new System.Windows.Forms.Label();
-			this.agEvent = new System.Windows.Forms.Label();
-			this.ocEvent = new System.Windows.Forms.Label();
-			this.bcEvent = new System.Windows.Forms.Label();
-			this.hbEvent = new System.Windows.Forms.Label();
-			this.ttEvent = new System.Windows.Forms.Label();
+			this.awEvent = new System.Windows.Forms.LinkLabel();
+			this.ldEvent = new System.Windows.Forms.LinkLabel();
+			this.agEvent = new System.Windows.Forms.LinkLabel();
+			this.ocEvent = new System.Windows.Forms.LinkLabel();
+			this.bcEvent = new System.Windows.Forms.LinkLabel();
+			this.hbEvent = new System.Windows.Forms.LinkLabel();
+			this.ttEvent = new System.Windows.Forms.LinkLabel();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label15 = new System.Windows.Forms.Label();
 			this.label16 = new System.Windows.Forms.Label();
@@ -75,6 +75,8 @@ namespace KH2DoorTracker
 			this.findRoom = new System.Windows.Forms.ComboBox();
 			this.showSpoilers = new System.Windows.Forms.CheckBox();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
+			this.roomCount = new System.Windows.Forms.Label();
+			this.doorCount = new System.Windows.Forms.Label();
 			groupBox1 = new System.Windows.Forms.GroupBox();
 			groupBox2 = new System.Windows.Forms.GroupBox();
 			tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -103,12 +105,14 @@ namespace KH2DoorTracker
 			// currentRoom
 			// 
 			this.currentRoom.AutoEllipsis = true;
+			this.currentRoom.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.currentRoom.Location = new System.Drawing.Point(3, 16);
 			this.currentRoom.Name = "currentRoom";
 			this.currentRoom.Size = new System.Drawing.Size(245, 13);
 			this.currentRoom.TabIndex = 0;
 			this.currentRoom.Text = "Game not running.";
 			this.currentRoom.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.currentRoom.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// groupBox2
 			// 
@@ -285,61 +289,73 @@ namespace KH2DoorTracker
 			// 
 			this.nwEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.nwEvent.AutoEllipsis = true;
+			this.nwEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.nwEvent.Location = new System.Drawing.Point(150, 169);
 			this.nwEvent.Name = "nwEvent";
 			this.nwEvent.Size = new System.Drawing.Size(224, 13);
 			this.nwEvent.TabIndex = 21;
 			this.nwEvent.Text = "-";
+			this.nwEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// spEvent
 			// 
 			this.spEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.spEvent.AutoEllipsis = true;
+			this.spEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.spEvent.Location = new System.Drawing.Point(150, 155);
 			this.spEvent.Name = "spEvent";
 			this.spEvent.Size = new System.Drawing.Size(224, 13);
 			this.spEvent.TabIndex = 20;
 			this.spEvent.Text = "-";
+			this.spEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// prEvent
 			// 
 			this.prEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.prEvent.AutoEllipsis = true;
+			this.prEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.prEvent.Location = new System.Drawing.Point(150, 141);
 			this.prEvent.Name = "prEvent";
 			this.prEvent.Size = new System.Drawing.Size(224, 13);
 			this.prEvent.TabIndex = 19;
 			this.prEvent.Text = "-";
+			this.prEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// htEvent
 			// 
 			this.htEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.htEvent.AutoEllipsis = true;
+			this.htEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.htEvent.Location = new System.Drawing.Point(150, 127);
 			this.htEvent.Name = "htEvent";
 			this.htEvent.Size = new System.Drawing.Size(224, 13);
 			this.htEvent.TabIndex = 18;
 			this.htEvent.Text = "-";
+			this.htEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// dcEvent
 			// 
 			this.dcEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.dcEvent.AutoEllipsis = true;
+			this.dcEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.dcEvent.Location = new System.Drawing.Point(150, 113);
 			this.dcEvent.Name = "dcEvent";
 			this.dcEvent.Size = new System.Drawing.Size(224, 13);
 			this.dcEvent.TabIndex = 17;
 			this.dcEvent.Text = "-";
+			this.dcEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// plEvent
 			// 
 			this.plEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.plEvent.AutoEllipsis = true;
+			this.plEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.plEvent.Location = new System.Drawing.Point(150, 99);
 			this.plEvent.Name = "plEvent";
 			this.plEvent.Size = new System.Drawing.Size(224, 13);
 			this.plEvent.TabIndex = 16;
 			this.plEvent.Text = "-";
+			this.plEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// label14
 			// 
@@ -399,71 +415,85 @@ namespace KH2DoorTracker
 			// 
 			this.awEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.awEvent.AutoEllipsis = true;
+			this.awEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.awEvent.Location = new System.Drawing.Point(150, 85);
 			this.awEvent.Name = "awEvent";
 			this.awEvent.Size = new System.Drawing.Size(224, 13);
 			this.awEvent.TabIndex = 2;
 			this.awEvent.Text = "-";
+			this.awEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// ldEvent
 			// 
 			this.ldEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.ldEvent.AutoEllipsis = true;
+			this.ldEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.ldEvent.Location = new System.Drawing.Point(150, 71);
 			this.ldEvent.Name = "ldEvent";
 			this.ldEvent.Size = new System.Drawing.Size(224, 13);
 			this.ldEvent.TabIndex = 2;
 			this.ldEvent.Text = "-";
+			this.ldEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// agEvent
 			// 
 			this.agEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.agEvent.AutoEllipsis = true;
+			this.agEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.agEvent.Location = new System.Drawing.Point(150, 57);
 			this.agEvent.Name = "agEvent";
 			this.agEvent.Size = new System.Drawing.Size(224, 13);
 			this.agEvent.TabIndex = 2;
 			this.agEvent.Text = "-";
+			this.agEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// ocEvent
 			// 
 			this.ocEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.ocEvent.AutoEllipsis = true;
+			this.ocEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.ocEvent.Location = new System.Drawing.Point(150, 43);
 			this.ocEvent.Name = "ocEvent";
 			this.ocEvent.Size = new System.Drawing.Size(224, 13);
 			this.ocEvent.TabIndex = 2;
 			this.ocEvent.Text = "-";
+			this.ocEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// bcEvent
 			// 
 			this.bcEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.bcEvent.AutoEllipsis = true;
+			this.bcEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.bcEvent.Location = new System.Drawing.Point(150, 29);
 			this.bcEvent.Name = "bcEvent";
 			this.bcEvent.Size = new System.Drawing.Size(224, 13);
 			this.bcEvent.TabIndex = 2;
 			this.bcEvent.Text = "-";
+			this.bcEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// hbEvent
 			// 
 			this.hbEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.hbEvent.AutoEllipsis = true;
+			this.hbEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.hbEvent.Location = new System.Drawing.Point(150, 15);
 			this.hbEvent.Name = "hbEvent";
 			this.hbEvent.Size = new System.Drawing.Size(224, 13);
 			this.hbEvent.TabIndex = 2;
 			this.hbEvent.Text = "-";
+			this.hbEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// ttEvent
 			// 
 			this.ttEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.ttEvent.AutoEllipsis = true;
+			this.ttEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.ttEvent.Location = new System.Drawing.Point(150, 1);
 			this.ttEvent.Name = "ttEvent";
 			this.ttEvent.Size = new System.Drawing.Size(224, 13);
 			this.ttEvent.TabIndex = 1;
 			this.ttEvent.Text = "-";
+			this.ttEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
 			// label8
 			// 
@@ -585,7 +615,7 @@ namespace KH2DoorTracker
 			// showSpoilers
 			// 
 			this.showSpoilers.AutoSize = true;
-			this.showSpoilers.Location = new System.Drawing.Point(272, 27);
+			this.showSpoilers.Location = new System.Drawing.Point(399, 27);
 			this.showSpoilers.Name = "showSpoilers";
 			this.showSpoilers.Size = new System.Drawing.Size(93, 17);
 			this.showSpoilers.TabIndex = 4;
@@ -597,6 +627,24 @@ namespace KH2DoorTracker
 			this.timer1.Interval = 500;
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
+			// roomCount
+			// 
+			this.roomCount.AutoSize = true;
+			this.roomCount.Location = new System.Drawing.Point(272, 12);
+			this.roomCount.Name = "roomCount";
+			this.roomCount.Size = new System.Drawing.Size(57, 13);
+			this.roomCount.TabIndex = 5;
+			this.roomCount.Text = "Rooms: -/-";
+			// 
+			// doorCount
+			// 
+			this.doorCount.AutoSize = true;
+			this.doorCount.Location = new System.Drawing.Point(272, 41);
+			this.doorCount.Name = "doorCount";
+			this.doorCount.Size = new System.Drawing.Size(52, 13);
+			this.doorCount.TabIndex = 6;
+			this.doorCount.Text = "Doors: -/-";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -604,6 +652,8 @@ namespace KH2DoorTracker
 			this.AutoSize = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.ClientSize = new System.Drawing.Size(508, 620);
+			this.Controls.Add(this.doorCount);
+			this.Controls.Add(this.roomCount);
 			this.Controls.Add(this.showSpoilers);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
@@ -632,7 +682,7 @@ namespace KH2DoorTracker
 
 		#endregion
 
-		private System.Windows.Forms.Label currentRoom;
+		private System.Windows.Forms.LinkLabel currentRoom;
 		private System.Windows.Forms.Label door1;
 		private System.Windows.Forms.Label door7;
 		private System.Windows.Forms.Label door6;
@@ -647,13 +697,13 @@ namespace KH2DoorTracker
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Label awEvent;
-		private System.Windows.Forms.Label ldEvent;
-		private System.Windows.Forms.Label agEvent;
-		private System.Windows.Forms.Label ocEvent;
-		private System.Windows.Forms.Label bcEvent;
-		private System.Windows.Forms.Label hbEvent;
-		private System.Windows.Forms.Label ttEvent;
+		private System.Windows.Forms.LinkLabel awEvent;
+		private System.Windows.Forms.LinkLabel ldEvent;
+		private System.Windows.Forms.LinkLabel agEvent;
+		private System.Windows.Forms.LinkLabel ocEvent;
+		private System.Windows.Forms.LinkLabel bcEvent;
+		private System.Windows.Forms.LinkLabel hbEvent;
+		private System.Windows.Forms.LinkLabel ttEvent;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.Label label16;
@@ -661,17 +711,19 @@ namespace KH2DoorTracker
 		private System.Windows.Forms.Label label18;
 		private System.Windows.Forms.Label label19;
 		private System.Windows.Forms.Label label20;
-		private System.Windows.Forms.Label nwEvent;
-		private System.Windows.Forms.Label spEvent;
-		private System.Windows.Forms.Label prEvent;
-		private System.Windows.Forms.Label htEvent;
-		private System.Windows.Forms.Label dcEvent;
-		private System.Windows.Forms.Label plEvent;
+		private System.Windows.Forms.LinkLabel nwEvent;
+		private System.Windows.Forms.LinkLabel spEvent;
+		private System.Windows.Forms.LinkLabel prEvent;
+		private System.Windows.Forms.LinkLabel htEvent;
+		private System.Windows.Forms.LinkLabel dcEvent;
+		private System.Windows.Forms.LinkLabel plEvent;
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.ComboBox findRoom;
 		private System.Windows.Forms.Label roomPath;
 		private System.Windows.Forms.Label roomDist;
 		private System.Windows.Forms.CheckBox showSpoilers;
 		private System.Windows.Forms.Timer timer1;
+		private System.Windows.Forms.Label roomCount;
+		private System.Windows.Forms.Label doorCount;
 	}
 }

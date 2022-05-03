@@ -19,6 +19,7 @@ namespace KH2DoorTracker
 		IntPtr Now, Save;
 		Room lastRoom = null;
 		Room[] roomsDoors;
+		Door[] doors;
 
 		public MainForm()
 		{
@@ -112,6 +113,9 @@ namespace KH2DoorTracker
 						new WorldData(rooms.Where(a => a.World == 18).ToList(), nwEvent)
 					};
 					roomsDoors = rooms.Where(a => a.CopyOf == null && a.Doors.Length > 0).ToArray();
+					roomCount.Text = $"{roomsDoors.Count(a => a.Visited)}/{roomsDoors.Length}";
+					doors = roomsDoors.SelectMany(a => a.Doors).ToArray();
+					doorCount.Text = $"{doors.Count(a => a.Used)}/{doors.Length}";
 					findRoom.BeginUpdate();
 					foreach (var item in roomsDoors)
 						findRoom.Items.Add(item.Name);
@@ -166,11 +170,13 @@ namespace KH2DoorTracker
 				else
 				{
 					currentRoom.Text = "Game not running.";
+					currentRoom.Links[0] = new LinkLabel.Link(0, 0) { Enabled = false };
 					foreach (var door in doorLabels)
 						door.Text = "-";
 					foreach (var world in worlds)
 					{
 						world.EventLabel.Text = "-";
+						world.EventLabel.Links[0] = new LinkLabel.Link(0, 0) { Enabled = false };
 						world.LastEventRoom = null;
 					}
 					roomDist.Text = "-";
@@ -190,6 +196,7 @@ namespace KH2DoorTracker
 						currentRoom.Text = room.Name;
 						if (room.CopyOf != null)
 							room = room.CopyOf;
+						currentRoom.Links[0] = new LinkLabel.Link(0, currentRoom.Text.Length, room);
 						if (lastRoom != null)
 						{
 							foreach (var door in lastRoom.Doors.Where(a => a.NewDestRoom == room))
@@ -224,6 +231,7 @@ namespace KH2DoorTracker
 					else
 					{
 						currentRoom.Text = "Unknown Room";
+						currentRoom.Links[0] = new LinkLabel.Link(0, 0) { Enabled = false };
 						foreach (var door in doorLabels)
 							door.Text = "-";
 						if (findRoom.SelectedIndex != -1)
@@ -235,8 +243,12 @@ namespace KH2DoorTracker
 					if (lastRoom == null || lastRoom.Doors.Any(a => a.NewDestRoom == room) || tries++ >= 2)
 					{
 						tries = 0;
+						if (room != null)
+							room.Visited = true;
 						lastRoom = room;
 					}
+					roomCount.Text = $"{roomsDoors.Count(a => a.Visited)}/{roomsDoors.Length}";
+					doorCount.Text = $"{doors.Count(a => a.Used)}/{doors.Length}";
 				}
 				foreach (var wd in worlds)
 				{
@@ -248,13 +260,15 @@ namespace KH2DoorTracker
 							if (rm != wd.LastEventRoom)
 							{
 								wd.EventLabel.Text = rm.Name;
+								wd.EventLabel.Links[0] = new LinkLabel.Link(0, rm.Name.Length, rm);
 								wd.LastEventRoom = rm;
 							}
 							break;
 						}
 					if (!found && (newproc || wd.LastEventRoom != null))
 					{
-						wd.EventLabel.Text = "No events.";
+						wd.EventLabel.Text = "N/A";
+						wd.EventLabel.Links[0] = new LinkLabel.Link(0, 0) { Enabled = false };
 						wd.LastEventRoom = null;
 					}
 				}
@@ -358,6 +372,11 @@ namespace KH2DoorTracker
 			}
 		}
 
+		private void LinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			findRoom.SelectedIndex = Array.IndexOf(roomsDoors, (Room)e.Link.LinkData);
+		}
+
 		private void Proc_Exited(object sender, EventArgs e)
 		{
 			lock (proc)
@@ -369,9 +388,9 @@ namespace KH2DoorTracker
 	{
 		public Room LastEventRoom { get; set; }
 		public System.Collections.ObjectModel.ReadOnlyCollection<Room> Rooms { get; }
-		public Label EventLabel { get; }
+		public LinkLabel EventLabel { get; }
 
-		public WorldData(IList<Room> rooms, Label evlbl)
+		public WorldData(IList<Room> rooms, LinkLabel evlbl)
 		{
 			EventLabel = evlbl;
 			Rooms = new System.Collections.ObjectModel.ReadOnlyCollection<Room>(rooms);
@@ -397,6 +416,7 @@ namespace KH2DoorTracker
 		public int[] CopyIDs { get; set; }
 		[JsonIgnore]
 		public Room[] Copies { get; set; }
+		public bool Visited { get; set; }
 	}
 
 	public class Door
