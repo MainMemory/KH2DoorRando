@@ -63,6 +63,11 @@ namespace KH2DoorTracker
 							d.DestDoor = Array.Find(d.DestRoom.Doors, a => a.ID == d.DestDoorID);
 							if (d.NewDestWorld != 0)
 							{
+								d.NewDestRoom = roomdict[d.NewDestWorld][d.NewDestRoomID];
+								d.NewDestDoor = Array.Find(d.NewDestRoom.Doors, a => a.ID == d.NewDestDoorID);
+							}
+							else
+							{
 								d.NewDestRoom = d.DestRoom;
 								d.NewDestDoor = d.DestDoor;
 							}
@@ -74,6 +79,11 @@ namespace KH2DoorTracker
 							d.DestRoom = roomdict[d.DestWorld][d.DestRoomID];
 							d.DestDoor = Array.Find(d.DestRoom.Doors, a => a.ID == d.DestDoorID);
 							if (d.NewDestWorld != 0)
+							{
+								d.NewDestRoom = roomdict[d.NewDestWorld][d.NewDestRoomID];
+								d.NewDestDoor = Array.Find(d.NewDestRoom.Doors, a => a.ID == d.NewDestDoorID);
+							}
+							else
 							{
 								d.NewDestRoom = d.DestRoom;
 								d.NewDestDoor = d.DestDoor;
