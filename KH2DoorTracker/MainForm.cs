@@ -113,9 +113,9 @@ namespace KH2DoorTracker
 						new WorldData(rooms.Where(a => a.World == 18).ToList(), nwEvent)
 					};
 					roomsDoors = rooms.Where(a => a.CopyOf == null && a.Doors.Length > 0).ToArray();
-					roomCount.Text = $"{roomsDoors.Count(a => a.Visited)}/{roomsDoors.Length}";
+					roomCount.Text = $"Rooms: {roomsDoors.Count(a => a.Visited)}/{roomsDoors.Length}";
 					doors = roomsDoors.SelectMany(a => a.Doors).ToArray();
-					doorCount.Text = $"{doors.Count(a => a.Used)}/{doors.Length}";
+					doorCount.Text = $"Doors: {doors.Count(a => a.Used)}/{doors.Length}";
 					findRoom.BeginUpdate();
 					foreach (var item in roomsDoors)
 						findRoom.Items.Add(item.Name);
@@ -247,8 +247,8 @@ namespace KH2DoorTracker
 							room.Visited = true;
 						lastRoom = room;
 					}
-					roomCount.Text = $"{roomsDoors.Count(a => a.Visited)}/{roomsDoors.Length}";
-					doorCount.Text = $"{doors.Count(a => a.Used)}/{doors.Length}";
+					roomCount.Text = $"Rooms: {roomsDoors.Count(a => a.Visited)}/{roomsDoors.Length}";
+					doorCount.Text = $"Doors: {doors.Count(a => a.Used)}/{doors.Length}";
 				}
 				foreach (var wd in worlds)
 				{

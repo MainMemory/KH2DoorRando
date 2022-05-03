@@ -105,11 +105,11 @@ namespace KH2DoorTracker
 			// currentRoom
 			// 
 			this.currentRoom.AutoEllipsis = true;
-			this.currentRoom.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.currentRoom.Location = new System.Drawing.Point(3, 16);
 			this.currentRoom.Name = "currentRoom";
 			this.currentRoom.Size = new System.Drawing.Size(245, 13);
 			this.currentRoom.TabIndex = 0;
+			this.currentRoom.TabStop = true;
 			this.currentRoom.Text = "Game not running.";
 			this.currentRoom.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			this.currentRoom.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
@@ -289,7 +289,6 @@ namespace KH2DoorTracker
 			// 
 			this.nwEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.nwEvent.AutoEllipsis = true;
-			this.nwEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.nwEvent.Location = new System.Drawing.Point(150, 169);
 			this.nwEvent.Name = "nwEvent";
 			this.nwEvent.Size = new System.Drawing.Size(224, 13);
@@ -301,7 +300,6 @@ namespace KH2DoorTracker
 			// 
 			this.spEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.spEvent.AutoEllipsis = true;
-			this.spEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.spEvent.Location = new System.Drawing.Point(150, 155);
 			this.spEvent.Name = "spEvent";
 			this.spEvent.Size = new System.Drawing.Size(224, 13);
@@ -313,7 +311,6 @@ namespace KH2DoorTracker
 			// 
 			this.prEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.prEvent.AutoEllipsis = true;
-			this.prEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.prEvent.Location = new System.Drawing.Point(150, 141);
 			this.prEvent.Name = "prEvent";
 			this.prEvent.Size = new System.Drawing.Size(224, 13);
@@ -325,7 +322,6 @@ namespace KH2DoorTracker
 			// 
 			this.htEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.htEvent.AutoEllipsis = true;
-			this.htEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.htEvent.Location = new System.Drawing.Point(150, 127);
 			this.htEvent.Name = "htEvent";
 			this.htEvent.Size = new System.Drawing.Size(224, 13);
@@ -337,7 +333,6 @@ namespace KH2DoorTracker
 			// 
 			this.dcEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.dcEvent.AutoEllipsis = true;
-			this.dcEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.dcEvent.Location = new System.Drawing.Point(150, 113);
 			this.dcEvent.Name = "dcEvent";
 			this.dcEvent.Size = new System.Drawing.Size(224, 13);
@@ -349,7 +344,6 @@ namespace KH2DoorTracker
 			// 
 			this.plEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.plEvent.AutoEllipsis = true;
-			this.plEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.plEvent.Location = new System.Drawing.Point(150, 99);
 			this.plEvent.Name = "plEvent";
 			this.plEvent.Size = new System.Drawing.Size(224, 13);
@@ -415,7 +409,6 @@ namespace KH2DoorTracker
 			// 
 			this.awEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.awEvent.AutoEllipsis = true;
-			this.awEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.awEvent.Location = new System.Drawing.Point(150, 85);
 			this.awEvent.Name = "awEvent";
 			this.awEvent.Size = new System.Drawing.Size(224, 13);
@@ -427,7 +420,6 @@ namespace KH2DoorTracker
 			// 
 			this.ldEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.ldEvent.AutoEllipsis = true;
-			this.ldEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.ldEvent.Location = new System.Drawing.Point(150, 71);
 			this.ldEvent.Name = "ldEvent";
 			this.ldEvent.Size = new System.Drawing.Size(224, 13);
@@ -439,7 +431,6 @@ namespace KH2DoorTracker
 			// 
 			this.agEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.agEvent.AutoEllipsis = true;
-			this.agEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.agEvent.Location = new System.Drawing.Point(150, 57);
 			this.agEvent.Name = "agEvent";
 			this.agEvent.Size = new System.Drawing.Size(224, 13);
@@ -451,7 +442,6 @@ namespace KH2DoorTracker
 			// 
 			this.ocEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.ocEvent.AutoEllipsis = true;
-			this.ocEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.ocEvent.Location = new System.Drawing.Point(150, 43);
 			this.ocEvent.Name = "ocEvent";
 			this.ocEvent.Size = new System.Drawing.Size(224, 13);
@@ -463,7 +453,6 @@ namespace KH2DoorTracker
 			// 
 			this.bcEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.bcEvent.AutoEllipsis = true;
-			this.bcEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.bcEvent.Location = new System.Drawing.Point(150, 29);
 			this.bcEvent.Name = "bcEvent";
 			this.bcEvent.Size = new System.Drawing.Size(224, 13);
@@ -475,7 +464,6 @@ namespace KH2DoorTracker
 			// 
 			this.hbEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.hbEvent.AutoEllipsis = true;
-			this.hbEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.hbEvent.Location = new System.Drawing.Point(150, 15);
 			this.hbEvent.Name = "hbEvent";
 			this.hbEvent.Size = new System.Drawing.Size(224, 13);
@@ -487,11 +475,11 @@ namespace KH2DoorTracker
 			// 
 			this.ttEvent.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.ttEvent.AutoEllipsis = true;
-			this.ttEvent.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
 			this.ttEvent.Location = new System.Drawing.Point(150, 1);
 			this.ttEvent.Name = "ttEvent";
 			this.ttEvent.Size = new System.Drawing.Size(224, 13);
 			this.ttEvent.TabIndex = 1;
+			this.ttEvent.TabStop = true;
 			this.ttEvent.Text = "-";
 			this.ttEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
