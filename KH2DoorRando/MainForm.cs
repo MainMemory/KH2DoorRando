@@ -427,39 +427,24 @@ namespace KH2DoorRando
 							if (twoWayDoors.Checked)
 							{
 								Room[] forks = roomsavail.Where(a => a.Doors.Length > 2).ToArray();
-								List<Door> doorlist = new List<Door>(forks.Length * 2 - 2);
-								foreach (var item in forks)
-									doorlist.Add(item.Doors[rand.Next(item.Doors.Length)]);
-								while (doorlist.Count < forks.Length * 2 - 2)
+								Shuffle(forks, rand);
+								List<Room> used = new List<Room>() { forks[0] };
+								foreach (var dst in forks.Skip(1))
 								{
-									Room r = forks[rand.Next(forks.Length)];
-									Door d = r.Doors[rand.Next(r.Doors.Length)];
-									if (!doorlist.Contains(d))
-										doorlist.Add(d);
+									Room src = used[rand.Next(used.Count)];
+									List<Door> exits = src.Doors.Where(a => a.NewDestRoom == null).ToList();
+									List<Door> ents = dst.Doors.Where(a => a.NewDestRoom == null).ToList();
+									Door from = exits[rand.Next(exits.Count)];
+									Door to = ents[rand.Next(ents.Count)];
+									from.NewDestRoom = dst;
+									from.NewDestDoor = to;
+									to.NewDestRoom = src;
+									to.NewDestDoor = from;
+									if (exits.Count == 1)
+										used.Remove(src);
+									used.Add(dst);
 								}
-								Door[] doors = doorlist.ToArray();
-								Shuffle(doors, rand);
-								for (int i = 0; i < doors.Length; i += 2)
-									while (doors[i].Room == doors[i + 1].Room)
-									{
-										int j = rand.Next(doorlist.Count);
-										if (doors[j].Room != doors[i].Room && doors[j ^ 1].Room != doors[i].Room)
-										{
-											Door d = doors[i + 1];
-											doors[i + 1] = doors[j];
-											doors[j] = d;
-										}
-									}
-								doorlist = new List<Door>(doors);
-								while (doorlist.Count > 0)
-								{
-									doorlist[0].NewDestRoom = doorlist[1].Room;
-									doorlist[0].NewDestDoor = doorlist[1];
-									doorlist[1].NewDestRoom = doorlist[0].Room;
-									doorlist[1].NewDestDoor = doorlist[0];
-									doorlist.RemoveRange(0, 2);
-								}
-								doors = forks.SelectMany(a => a.Doors.Where(b => b.NewDestDoor == null)).ToArray();
+								Door[] doors = forks.SelectMany(a => a.Doors.Where(b => b.NewDestDoor == null)).ToArray();
 								Door[] singles = roomsavail.Where(a => a.Doors.Length == 1).Select(a => a.Doors[0]).ToArray();
 								if (singles.Length > doors.Length)
 								{
@@ -475,7 +460,7 @@ namespace KH2DoorRando
 									singles[i].NewDestRoom = doors[i].Room;
 									singles[i].NewDestDoor = doors[i];
 								}
-								doorlist = new List<Door>(doors.Skip(singles.Length));
+								List<Door> doorlist = new List<Door>(doors.Skip(singles.Length));
 								while (doorlist.Count > 1)
 								{
 									doorlist[0].NewDestRoom = doorlist[1].Room;
