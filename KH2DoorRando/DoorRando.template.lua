@@ -38,6 +38,14 @@ end
 
 --REPLACE
 
+function CheckDisableCombo()
+if OnPC then
+	return (ReadInt(0x24944A2) & 0x2000c00) == 0x2000c00
+else
+	return (ReadShort(0x34D45C) & 0x1800) == 0
+end
+end
+
 function _OnFrame()
 --Disable all door blocks
 for i=0,1023,8 do
@@ -48,12 +56,19 @@ WriteByte(Save+0x1E98,ReadByte(Save+0x1E98) & ~0xD)
 WriteByte(Save+0x1E99,ReadByte(Save+0x1E99) & ~2)
 --Remove the rock in Cavern of Remembrance: Depths
 WriteByte(Save+1D24,ReadByte(Save+1D24) | 0x10)
+if CheckDisableCombo() then
+	DisableWarp = true
+end
 --Check for doors and swap them
 local room = Rooms[ReadShort(Now+0x30)]
 if room ~= nil then
 	local door = room[ReadInt(Now+0x20) & 0xFFFFFF]
 	if door ~= nil then
-		Warp(door.w, door.r, door.d)
+		if not DisableWarp then
+			Warp(door.w, door.r, door.d)
+		else
+			DisableWarp = false
+		end
 		WriteInt(Now+0x20,0xFFFFFFFF) --Don't repeat this process indefinitely
 	end
 end
