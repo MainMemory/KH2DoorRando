@@ -519,17 +519,17 @@ namespace KH2DoorRando
 					{
 						sb.AppendLine($"\t[0x{(room.ID << 8) | room.World:X4}] = {{");
 						foreach (var door in room.Doors.Where(a => a.NewDestDoor != a.DestDoor))
-							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestWorld}, r={door.NewDestRoomID}, d={door.NewDestDoorID} }},");
+							PrintDoorInfo(sb, door);
 						foreach (var door in room.ExtraDoors.Where(a => a.CopyOf.NewDestDoor != a.CopyOf.DestDoor))
-							sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestWorld}, r={door.CopyOf.NewDestRoomID}, d={door.CopyOf.NewDestDoorID} }},");
+							PrintDoorInfo(sb, door);
 						sb.AppendLine("\t},");
 						foreach (var rm2 in room.Copies)
 						{
 							sb.AppendLine($"\t[0x{(rm2.ID << 8) | room.World:X4}] = {{");
 							foreach (var door in room.Doors.Where(a => a.NewDestDoor != a.DestDoor))
-								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.NewDestWorld}, r={door.NewDestRoomID}, d={door.NewDestDoorID} }},");
+								PrintDoorInfo(sb, door);
 							foreach (var door in room.ExtraDoors.Where(a => a.CopyOf.NewDestDoor != a.CopyOf.DestDoor))
-								sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{ w={door.CopyOf.NewDestWorld}, r={door.CopyOf.NewDestRoomID}, d={door.CopyOf.NewDestDoorID} }},");
+								PrintDoorInfo(sb, door);
 							sb.AppendLine("\t},");
 						}
 					}
@@ -539,6 +539,20 @@ namespace KH2DoorRando
 					spoilersButton.Enabled = trackerButton.Enabled = true;
 				}
 			}
+		}
+
+		private static void PrintDoorInfo(StringBuilder sb, Door door)
+		{
+			Door d2 = door;
+			if (door.CopyOf != null)
+				d2 = door.CopyOf;
+			sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{");
+			sb.AppendLine($"\t\t\tw = {d2.NewDestWorld},");
+			sb.AppendLine($"\t\t\tr = {d2.NewDestRoomID},");
+			sb.AppendLine($"\t\t\td = {d2.NewDestDoorID},");
+			if (d2.DisableEvents != null)
+				sb.AppendLine($"\t\t\te = {{ {string.Join(", ", d2.DisableEvents)} }},");
+			sb.AppendLine("\t\t},");
 		}
 
 		private bool RandomizeRooms(Random rand, List<Room> roomset, bool connectends, Room startroom = null)
@@ -789,6 +803,8 @@ namespace KH2DoorRando
 		}
 		[JsonIgnore]
 		public Door NewDestDoor { get; set; }
+		[JsonProperty("Disable Events")]
+		public int[] DisableEvents { get; set; }
 		public bool? Used { get; set; }
 	}
 

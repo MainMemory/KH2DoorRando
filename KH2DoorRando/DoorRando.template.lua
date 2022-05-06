@@ -54,8 +54,6 @@ end
 --Remove ship blocks in Port Royal
 WriteByte(Save+0x1E98,ReadByte(Save+0x1E98) & ~0xD)
 WriteByte(Save+0x1E99,ReadByte(Save+0x1E99) & ~2)
---Remove the rock in Cavern of Remembrance: Depths
-WriteByte(Save+1D24,ReadByte(Save+1D24) | 0x10)
 if CheckDisableCombo() then
 	DisableWarp = true
 end
@@ -64,6 +62,18 @@ local room = Rooms[ReadShort(Now+0x30)]
 if room ~= nil then
 	local door = room[ReadInt(Now+0x20) & 0xFFFFFF]
 	if door ~= nil then
+		if door.e ~= nil then
+			local evt = ReadShort(Now+0x38)
+			for i,v in ipairs(door.e) do
+				if v == evt then
+					WriteByte(Now+0x20,door.w)
+					WriteByte(Now+0x21,door.r)
+					WriteShort(Now+0x22,door.d)
+					WriteArray(Now+0x24,ReadArray(Save + 0x10 + 0x180*door.w + 0x6*door.r,6))
+					return
+				end
+			end
+		end
 		if not DisableWarp then
 			Warp(door.w, door.r, door.d)
 		else
