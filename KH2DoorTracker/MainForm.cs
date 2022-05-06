@@ -481,6 +481,8 @@ namespace KH2DoorTracker
 		}
 		[JsonIgnore]
 		public Door NewDestDoor { get; set; }
+		[JsonProperty("Disable Events")]
+		public int[] DisableEvents { get; set; }
 		public bool Used { get; set; }
 	}
 
