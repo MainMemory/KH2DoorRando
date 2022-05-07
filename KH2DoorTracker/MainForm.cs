@@ -122,29 +122,34 @@ namespace KH2DoorTracker
 					findRoom.EndUpdate();
 					timer1.Start();
 				}
+				else
+					Close();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			switch (MessageBox.Show(this, "Do you want to save the seed's progress?", "Save Seed Progress", MessageBoxButtons.YesNoCancel))
+			if (rooms != null)
 			{
-				case DialogResult.Cancel:
-					e.Cancel = true;
-					return;
-				case DialogResult.Yes:
-					using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "json", FileName = Path.GetFileName(filename), Filter = "JavaScript Object Notation|*.json", InitialDirectory = Path.GetDirectoryName(filename), RestoreDirectory = true })
-						switch (dlg.ShowDialog(this))
-						{
-							case DialogResult.OK:
-								File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(rooms, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
-								break;
-							case DialogResult.Cancel:
-								e.Cancel = true;
-								return;
-						}
-					break;
+				switch (MessageBox.Show(this, "Do you want to save the seed's progress?", "Save Seed Progress", MessageBoxButtons.YesNoCancel))
+				{
+					case DialogResult.Cancel:
+						e.Cancel = true;
+						return;
+					case DialogResult.Yes:
+						using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "json", FileName = Path.GetFileName(filename), Filter = "JavaScript Object Notation|*.json", InitialDirectory = Path.GetDirectoryName(filename), RestoreDirectory = true })
+							switch (dlg.ShowDialog(this))
+							{
+								case DialogResult.OK:
+									File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(rooms, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+									break;
+								case DialogResult.Cancel:
+									e.Cancel = true;
+									return;
+							}
+						break;
+				}
+				timer1.Stop();
 			}
-			timer1.Stop();
 		}
 
 		int tries = 0;
