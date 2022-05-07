@@ -417,6 +417,7 @@ namespace KH2DoorTracker
 		public Door[] Doors { get; set; }
 		public Warp[] Warps { get; set; }
 		public int[] Events { get; set; }
+		public int? Map { get; set; }
 		[JsonProperty("Extra Doors")]
 		public Door[] ExtraDoors { get; set; }
 		[JsonProperty("Copies")]
