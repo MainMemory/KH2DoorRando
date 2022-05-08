@@ -522,8 +522,6 @@ namespace KH2DoorRando
 							PrintDoorInfo(sb, door);
 						foreach (var door in room.ExtraDoors.Where(a => a.CopyOf.NewDestDoor != a.CopyOf.DestDoor))
 							PrintDoorInfo(sb, door);
-						if (room.Map != null)
-							sb.AppendLine($"\t\tmap = {room.Map},");
 						sb.AppendLine("\t},");
 						foreach (var rm2 in room.Copies)
 						{
@@ -532,12 +530,11 @@ namespace KH2DoorRando
 								PrintDoorInfo(sb, door);
 							foreach (var door in room.ExtraDoors.Where(a => a.CopyOf.NewDestDoor != a.CopyOf.DestDoor))
 								PrintDoorInfo(sb, door);
-							if (rm2.Map != null)
-								sb.AppendLine($"\t\tmap = {rm2.Map},");
 							sb.AppendLine("\t},");
 						}
 					}
 					sb.AppendLine("}");
+					sb.Replace("{ w=18, r=7, d=1 }", "{ w=18, r=8, d=0 }");
 					File.WriteAllText(dlg.FileName, File.ReadAllText("DoorRando.template.lua").Replace("--REPLACE", sb.ToString()));
 					spoilersButton.Enabled = trackerButton.Enabled = true;
 				}
@@ -550,18 +547,9 @@ namespace KH2DoorRando
 			if (door.CopyOf != null)
 				d2 = door.CopyOf;
 			sb.AppendLine($"\t\t[0x{(door.DestDoorID << 16) | (door.DestRoomID << 8) | door.DestWorld:X6}] = {{");
-			if (d2.NewDestWorld == 18 && d2.NewDestRoomID == 7 && d2.NewDestDoorID == 1)
-			{
-				sb.AppendLine($"\t\t\tw = 18,");
-				sb.AppendLine($"\t\t\tr = 8,");
-				sb.AppendLine($"\t\t\td = 0,");
-			}
-			else
-			{
-				sb.AppendLine($"\t\t\tw = {d2.NewDestWorld},");
-				sb.AppendLine($"\t\t\tr = {d2.NewDestRoomID},");
-				sb.AppendLine($"\t\t\td = {d2.NewDestDoorID},");
-			}
+			sb.AppendLine($"\t\t\tw = {d2.NewDestWorld},");
+			sb.AppendLine($"\t\t\tr = {d2.NewDestRoomID},");
+			sb.AppendLine($"\t\t\td = {d2.NewDestDoorID},");
 			if (d2.DisableEvents != null)
 				sb.AppendLine($"\t\t\te = {{ {string.Join(", ", d2.DisableEvents)} }},");
 			sb.AppendLine("\t\t},");
@@ -747,7 +735,6 @@ namespace KH2DoorRando
 		public Door[] Doors { get; set; }
 		public Warp[] Warps { get; set; }
 		public int[] Events { get; set; }
-		public int? Map { get; set; }
 		[JsonProperty("Extra Doors")]
 		public Door[] ExtraDoors { get; set; }
 		[JsonProperty("Copies")]

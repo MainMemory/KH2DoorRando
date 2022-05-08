@@ -54,14 +54,6 @@ end
 --Remove ship blocks in Port Royal
 WriteByte(Save+0x1E98,ReadByte(Save+0x1E98) & ~0xD)
 WriteByte(Save+0x1E99,ReadByte(Save+0x1E99) & ~2)
---Force all rooms' MAP values
-for wr,room in ipairs(Rooms) do
-	if room.map ~= nil then
-		local w = wr & 0xFF
-		local r = (wr >> 8) & 0xFF
-		WriteShort(Save + 0x10 + 0x180*w + 0x6*r, room.map)
-	end
-end
 if CheckDisableCombo() then
 	DisableWarp = true
 end
