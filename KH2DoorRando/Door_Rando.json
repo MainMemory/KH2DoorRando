@@ -126,7 +126,8 @@
 				"Dest Door": 1,
 				"Disable Events": [
 					4
-				]
+				],
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -322,7 +323,8 @@
 				"Door ID": 3,
 				"Dest World": 2,
 				"Dest Room": 37,
-				"Dest Door": 2
+				"Dest Door": 2,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -372,7 +374,8 @@
 				"Door ID": 2,
 				"Dest World": 2,
 				"Dest Room": 37,
-				"Dest Door": 3
+				"Dest Door": 3,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -408,19 +411,22 @@
 				"Door ID": 1,
 				"Dest World": 2,
 				"Dest Room": 11,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
 				"Dest World": 2,
 				"Dest Room": 11,
-				"Dest Door": 2
+				"Dest Door": 2,
+				"Locked": true
 			},
 			{
 				"Door ID": 4,
 				"Dest World": 2,
 				"Dest Room": 25,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -485,13 +491,15 @@
 				"Door ID": 1,
 				"Dest World": 2,
 				"Dest Room": 9,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
 				"Dest World": 2,
 				"Dest Room": 9,
-				"Dest Door": 2
+				"Dest Door": 2,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -703,7 +711,8 @@
 				"Door ID": 2,
 				"Dest World": 2,
 				"Dest Room": 40,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -837,7 +846,8 @@
 				"Door ID": 1,
 				"Dest World": 2,
 				"Dest Room": 9,
-				"Dest Door": 4
+				"Dest Door": 4,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -1355,7 +1365,8 @@
 				"Door ID": 1,
 				"Dest World": 4,
 				"Dest Room": 12,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -1407,7 +1418,8 @@
 				"Door ID": 3,
 				"Dest World": 4,
 				"Dest Room": 21,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -1469,7 +1481,8 @@
 				"Door ID": 1,
 				"Dest World": 4,
 				"Dest Room": 7,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -1770,19 +1783,22 @@
 				"Door ID": 1,
 				"Dest World": 4,
 				"Dest Room": 24,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
 				"Dest World": 4,
 				"Dest Room": 24,
-				"Dest Door": 2
+				"Dest Door": 2,
+				"Locked": true
 			},
 			{
 				"Door ID": 3,
 				"Dest World": 4,
 				"Dest Room": 22,
-				"Dest Door": 2
+				"Dest Door": 2,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -1799,13 +1815,15 @@
 				"Door ID": 0,
 				"Dest World": 4,
 				"Dest Room": 24,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			},
 			{
 				"Door ID": 1,
 				"Dest World": 4,
 				"Dest Room": 24,
-				"Dest Door": 3
+				"Dest Door": 3,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
@@ -1834,7 +1852,8 @@
 				"Door ID": 1,
 				"Dest World": 4,
 				"Dest Room": 24,
-				"Dest Door": 5
+				"Dest Door": 5,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -1855,37 +1874,43 @@
 				"Door ID": 1,
 				"Dest World": 4,
 				"Dest Room": 22,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
 				"Dest World": 4,
 				"Dest Room": 21,
-				"Dest Door": 2
+				"Dest Door": 2,
+				"Locked": true
 			},
 			{
 				"Door ID": 3,
 				"Dest World": 4,
 				"Dest Room": 22,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			},
 			{
 				"Door ID": 4,
 				"Dest World": 4,
 				"Dest Room": 23,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 5,
 				"Dest World": 4,
 				"Dest Room": 23,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			},
 			{
 				"Door ID": 6,
 				"Dest World": 4,
 				"Dest Room": 25,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -2236,19 +2261,22 @@
 				"Door ID": 1,
 				"Dest World": 5,
 				"Dest Room": 11,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
 				"Dest World": 5,
 				"Dest Room": 9,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 3,
 				"Dest World": 5,
 				"Dest Room": 12,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -2325,7 +2353,8 @@
 				"Door ID": 2,
 				"Dest World": 5,
 				"Dest Room": 12,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -2493,7 +2522,8 @@
 				"Dest Door": 0,
 				"Disable Events": [
 					6
-				]
+				],
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -2532,7 +2562,8 @@
 				"Door ID": 1,
 				"Dest World": 6,
 				"Dest Room": 0,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -3058,7 +3089,8 @@
 				"Door ID": 2,
 				"Dest World": 7,
 				"Dest Room": 14,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -3360,7 +3392,8 @@
 				"Door ID": 2,
 				"Dest World": 8,
 				"Dest Room": 8,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -3680,31 +3713,36 @@
 				"Door ID": 1,
 				"Dest World": 9,
 				"Dest Room": 3,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
 				"Dest World": 9,
 				"Dest Room": 4,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 3,
 				"Dest World": 9,
 				"Dest Room": 5,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 4,
 				"Dest World": 9,
 				"Dest Room": 9,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 5,
 				"Dest World": 9,
 				"Dest Room": 1,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -4614,25 +4652,29 @@
 				"Door ID": 3,
 				"Dest World": 13,
 				"Dest Room": 4,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 4,
 				"Dest World": 13,
 				"Dest Room": 5,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 5,
 				"Dest World": 13,
 				"Dest Room": 6,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 6,
 				"Dest World": 13,
 				"Dest Room": 7,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -4923,7 +4965,8 @@
 				"Door ID": 1,
 				"Dest World": 14,
 				"Dest Room": 3,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
@@ -5041,7 +5084,8 @@
 				"Door ID": 2,
 				"Dest World": 14,
 				"Dest Room": 7,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -5545,7 +5589,8 @@
 				"Door ID": 1,
 				"Dest World": 16,
 				"Dest Room": 5,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -5744,7 +5789,8 @@
 				"Door ID": 1,
 				"Dest World": 17,
 				"Dest Room": 4,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
@@ -5767,14 +5813,7 @@
 		"World": 17,
 		"Room": 2,
 		"Name": "Game Grid",
-		"Doors": [
-			{
-				"Door ID": 0,
-				"Dest World": 17,
-				"Dest Room": 0,
-				"Dest Door": 1
-			}
-		],
+		"Doors": [],
 		"Warps": [],
 		"Events": [
 			1,
@@ -5878,7 +5917,8 @@
 				"Door ID": 1,
 				"Dest World": 17,
 				"Dest Room": 10,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [],
@@ -6095,7 +6135,8 @@
 				"Door ID": 1,
 				"Dest World": 18,
 				"Dest Room": 6,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [
@@ -6293,7 +6334,8 @@
 				"Door ID": 1,
 				"Dest World": 18,
 				"Dest Room": 16,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			},
 			{
 				"Door ID": 2,
@@ -6305,7 +6347,8 @@
 				"Door ID": 3,
 				"Dest World": 18,
 				"Dest Room": 15,
-				"Dest Door": 0
+				"Dest Door": 0,
+				"Locked": true
 			}
 		],
 		"Warps": [
