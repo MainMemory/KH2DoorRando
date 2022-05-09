@@ -503,7 +503,7 @@ namespace KH2DoorRando
 									r.Doors[1].NewDestDoor = d2;
 								}
 							}
-							else if(!RandomizeRooms(rand, new List<Room>(roomsavail), false))
+							else if(!RandomizeRooms(rand, new List<Room>(roomsavail), true))
 								return;
 							break;
 						case 4:
@@ -587,15 +587,30 @@ namespace KH2DoorRando
 										from.NewDestRoom = dst;
 										from.NewDestDoor = dst.Doors[rand.Next(dst.Doors.Length)];
 									}
-									Door[] freeexits = wr.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
-									Shuffle(freeexits, rand);
-									for (int i = 0; i < freeexits.Length; i++)
+									List<Room> left = wr.Where(a => a.Doors.Any(b => b.NewDestRoom == null)).ToList();
+									while (left.Count > 1)
 									{
-										Door src = freeexits[i];
-										Door dst = freeexits[(i + 1) % freeexits.Length];
-										src.NewDestRoom = dst.Room;
-										src.NewDestDoor = dst;
+										r2 = left.ToArray();
+										Shuffle(r2, rand);
+										for (int i = 0; i < r2.Length; i++)
+										{
+											Room src = r2[i];
+											Room dst = r2[(i + 1) % r2.Length];
+											List<Door> exits = src.Doors.Where(a => a.NewDestRoom == null).ToList();
+											List<Door> ents = dst.Doors.Where(a => a.NewDestRoom == null).ToList();
+											Door from = exits[rand.Next(exits.Count)];
+											from.NewDestRoom = dst;
+											from.NewDestDoor = ents[rand.Next(ents.Count)];
+											if (exits.Count == 1)
+												left.Remove(src);
+										}
 									}
+									if (left.Count == 1)
+										foreach (Door d in left[0].Doors)
+										{
+											d.NewDestRoom = d.Room;
+											d.NewDestDoor = d;
+										}
 								}
 							}
 							break;
@@ -755,15 +770,30 @@ namespace KH2DoorRando
 					to.NewDestRoom = startroom;
 					to.NewDestDoor = startroom.Doors[0];
 				}
-				Door[] freeexits = roomset.SelectMany(a => a.Doors.Where(b => b.NewDestRoom == null)).ToArray();
-				Shuffle(freeexits, rand);
-				for (int i = 0; i < (startroom == null ? freeexits.Length : freeexits.Length - 1); i++)
+				List<Room> left = roomset.Where(a => a.Doors.Any(b => b.NewDestRoom == null)).ToList();
+				while (left.Count > 1)
 				{
-					Door src = freeexits[i];
-					Door dst = freeexits[(i + 1) % freeexits.Length];
-					src.NewDestRoom = dst.Room;
-					src.NewDestDoor = dst;
+					r2 = left.ToArray();
+					Shuffle(r2, rand);
+					for (int i = 0; i < r2.Length; i++)
+					{
+						Room src = r2[i];
+						Room dst = r2[(i + 1) % r2.Length];
+						List<Door> exits = src.Doors.Where(a => a.NewDestRoom == null).ToList();
+						List<Door> ents = dst.Doors.Where(a => a.NewDestRoom == null).ToList();
+						Door from = exits[rand.Next(exits.Count)];
+						from.NewDestRoom = dst;
+						from.NewDestDoor = ents[rand.Next(ents.Count)];
+						if (exits.Count == 1)
+							left.Remove(src);
+					}
 				}
+				if (left.Count == 1)
+					foreach (Door d in left[0].Doors)
+					{
+						d.NewDestRoom = d.Room;
+						d.NewDestDoor = d;
+					}
 			}
 			return true;
 		}
