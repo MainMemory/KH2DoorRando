@@ -4418,13 +4418,13 @@
 			{
 				"Door ID": 0,
 				"Dest World": 12,
-				"Dest Room": 2,
+				"Dest Room": 4,
 				"Dest Door": 0
 			},
 			{
 				"Door ID": 1,
 				"Dest World": 12,
-				"Dest Room": 4,
+				"Dest Room": 2,
 				"Dest Door": 0
 			}
 		],
@@ -4437,7 +4437,7 @@
 		"Extra Doors": [
 			{
 				"Door ID": 2,
-				"Copy Of": 1,
+				"Copy Of": 0,
 				"Dest World": 12,
 				"Dest Room": 5,
 				"Dest Door": 0
