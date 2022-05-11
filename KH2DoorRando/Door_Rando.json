@@ -2687,7 +2687,7 @@
 				"Dest Room": 15,
 				"Dest Door": 1,
 				"Disable Events": [
-					3
+					4
 				]
 			},
 			{
