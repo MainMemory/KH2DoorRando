@@ -155,12 +155,12 @@ namespace KH2DoorRando
 			switch (modeSelector.SelectedIndex)
 			{
 				case 1:
-					atEnable.Enabled = awEnable.Enabled = true;
+					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = true;
 					goaEnable.Enabled = false;
 					goaEnable.Checked = true;
 					break;
 				case 2:
-					atEnable.Enabled = awEnable.Enabled = true;
+					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = true;
 					dcEnable.Enabled = goaEnable.Enabled = false;
 					dcEnable.Checked = goaEnable.Checked = true;
 					break;
@@ -169,7 +169,7 @@ namespace KH2DoorRando
 					spEnable.Checked = prEnable.Checked = atEnable.Checked = awEnable.Checked = goaEnable.Checked = false;
 					break;
 				default:
-					atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = true;
+					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = true;
 					break;
 			}
 			toolTip1.SetToolTip(modeInfo, modeDescs[modeSelector.SelectedIndex]);
