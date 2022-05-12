@@ -293,6 +293,7 @@ namespace KH2DoorTracker
 			this.nwEvent.Name = "nwEvent";
 			this.nwEvent.Size = new System.Drawing.Size(224, 13);
 			this.nwEvent.TabIndex = 21;
+			this.nwEvent.TabStop = true;
 			this.nwEvent.Text = "-";
 			this.nwEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -304,6 +305,7 @@ namespace KH2DoorTracker
 			this.spEvent.Name = "spEvent";
 			this.spEvent.Size = new System.Drawing.Size(224, 13);
 			this.spEvent.TabIndex = 20;
+			this.spEvent.TabStop = true;
 			this.spEvent.Text = "-";
 			this.spEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -315,6 +317,7 @@ namespace KH2DoorTracker
 			this.prEvent.Name = "prEvent";
 			this.prEvent.Size = new System.Drawing.Size(224, 13);
 			this.prEvent.TabIndex = 19;
+			this.prEvent.TabStop = true;
 			this.prEvent.Text = "-";
 			this.prEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -326,6 +329,7 @@ namespace KH2DoorTracker
 			this.htEvent.Name = "htEvent";
 			this.htEvent.Size = new System.Drawing.Size(224, 13);
 			this.htEvent.TabIndex = 18;
+			this.htEvent.TabStop = true;
 			this.htEvent.Text = "-";
 			this.htEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -337,6 +341,7 @@ namespace KH2DoorTracker
 			this.dcEvent.Name = "dcEvent";
 			this.dcEvent.Size = new System.Drawing.Size(224, 13);
 			this.dcEvent.TabIndex = 17;
+			this.dcEvent.TabStop = true;
 			this.dcEvent.Text = "-";
 			this.dcEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -348,6 +353,7 @@ namespace KH2DoorTracker
 			this.plEvent.Name = "plEvent";
 			this.plEvent.Size = new System.Drawing.Size(224, 13);
 			this.plEvent.TabIndex = 16;
+			this.plEvent.TabStop = true;
 			this.plEvent.Text = "-";
 			this.plEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -413,6 +419,7 @@ namespace KH2DoorTracker
 			this.awEvent.Name = "awEvent";
 			this.awEvent.Size = new System.Drawing.Size(224, 13);
 			this.awEvent.TabIndex = 2;
+			this.awEvent.TabStop = true;
 			this.awEvent.Text = "-";
 			this.awEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -424,6 +431,7 @@ namespace KH2DoorTracker
 			this.ldEvent.Name = "ldEvent";
 			this.ldEvent.Size = new System.Drawing.Size(224, 13);
 			this.ldEvent.TabIndex = 2;
+			this.ldEvent.TabStop = true;
 			this.ldEvent.Text = "-";
 			this.ldEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -435,6 +443,7 @@ namespace KH2DoorTracker
 			this.agEvent.Name = "agEvent";
 			this.agEvent.Size = new System.Drawing.Size(224, 13);
 			this.agEvent.TabIndex = 2;
+			this.agEvent.TabStop = true;
 			this.agEvent.Text = "-";
 			this.agEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -446,6 +455,7 @@ namespace KH2DoorTracker
 			this.ocEvent.Name = "ocEvent";
 			this.ocEvent.Size = new System.Drawing.Size(224, 13);
 			this.ocEvent.TabIndex = 2;
+			this.ocEvent.TabStop = true;
 			this.ocEvent.Text = "-";
 			this.ocEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -457,6 +467,7 @@ namespace KH2DoorTracker
 			this.bcEvent.Name = "bcEvent";
 			this.bcEvent.Size = new System.Drawing.Size(224, 13);
 			this.bcEvent.TabIndex = 2;
+			this.bcEvent.TabStop = true;
 			this.bcEvent.Text = "-";
 			this.bcEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -468,6 +479,7 @@ namespace KH2DoorTracker
 			this.hbEvent.Name = "hbEvent";
 			this.hbEvent.Size = new System.Drawing.Size(224, 13);
 			this.hbEvent.TabIndex = 2;
+			this.hbEvent.TabStop = true;
 			this.hbEvent.Text = "-";
 			this.hbEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
 			// 
@@ -594,6 +606,8 @@ namespace KH2DoorTracker
 			this.findRoom.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
 			this.findRoom.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
 			this.findRoom.FormattingEnabled = true;
+			this.findRoom.Items.AddRange(new object[] {
+            "Unknown Door"});
 			this.findRoom.Location = new System.Drawing.Point(6, 19);
 			this.findRoom.Name = "findRoom";
 			this.findRoom.Size = new System.Drawing.Size(305, 21);

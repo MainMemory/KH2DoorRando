@@ -120,6 +120,9 @@ namespace KH2DoorTracker
 					foreach (var item in roomsDoors)
 						findRoom.Items.Add(item.Name);
 					findRoom.EndUpdate();
+					currentRoom.Links.Clear();
+					foreach (var w in worlds)
+						w.EventLabel.Links.Clear();
 					timer1.Start();
 				}
 				else
@@ -161,33 +164,43 @@ namespace KH2DoorTracker
 				var pl = Process.GetProcessesByName("KINGDOM HEARTS II FINAL MIX");
 				if (pl.Length > 0)
 				{
-					proc = pl[0];
-					proc.EnableRaisingEvents = true;
-					proc.Exited += Proc_Exited;
-					var ba = proc.MainModule.BaseAddress;
+					var ba = pl[0].MainModule.BaseAddress;
 					Now = ba + 0x0714DB8;
 					Save = ba + 0x09A70B0;
-					lastRoom = null;
-					foreach (var world in worlds)
-						world.LastEventRoom = null;
-					newproc = true;
 				}
 				else
 				{
-					currentRoom.Text = "Game not running.";
-					currentRoom.Links.Clear();
-					foreach (var door in doorLabels)
-						door.Text = "-";
-					foreach (var world in worlds)
+					pl = Process.GetProcessesByName("pcsx2");
+					if (pl.Length > 0)
 					{
-						world.EventLabel.Text = "-";
-						world.EventLabel.Links.Clear();
-						world.LastEventRoom = null;
+						IntPtr ba = (IntPtr)0x20000000;
+						Now = ba + 0x032BAE0;
+						Save = ba + 0x032BB30;
 					}
-					roomDist.Text = "-";
-					roomPath.Text = "-";
-					return;
+					else
+					{
+						currentRoom.Text = "Game not running.";
+						currentRoom.Links.Clear();
+						foreach (var door in doorLabels)
+							door.Text = "-";
+						foreach (var world in worlds)
+						{
+							world.EventLabel.Text = "-";
+							world.EventLabel.Links.Clear();
+							world.LastEventRoom = null;
+						}
+						roomDist.Text = "-";
+						roomPath.Text = "-";
+						return;
+					}
 				}
+				proc = pl[0];
+				proc.EnableRaisingEvents = true;
+				proc.Exited += Proc_Exited;
+				lastRoom = null;
+				foreach (var world in worlds)
+					world.LastEventRoom = null;
+				newproc = true;
 			}
 			lock (proc)
 			{
@@ -221,7 +234,11 @@ namespace KH2DoorTracker
 							doorLabels[i].Text = "-";
 						if (findRoom.SelectedIndex != -1)
 						{
-							Room[] path = FindShortestPath(room, roomsDoors[findRoom.SelectedIndex]);
+							Room[] path;
+							if (findRoom.SelectedIndex == 0)
+								path = FindUnknownDoor(room);
+							else
+								path = FindShortestPath(room, roomsDoors[findRoom.SelectedIndex - 1]);
 							if (path != null)
 							{
 								roomDist.Text = $"{path.Length - 1} room(s)";
@@ -342,6 +359,50 @@ namespace KH2DoorTracker
 			return shortestPath;
 		}
 
+		Room[] FindUnknownDoor(Room start)
+		{
+			if (doors.All(a => a.Used))
+				return null;
+			Stack<Room> stack = new Stack<Room>(rooms.Length);
+			stack.Push(start);
+			return FindUnknownDoor(start, stack, null);
+		}
+
+		Room[] FindUnknownDoor(Room stage, Stack<Room> path, Room[] shortestPath)
+		{
+			if (stage.CopyOf != null)
+				stage = stage.CopyOf;
+			if (shortestPath != null && path.Count >= shortestPath.Length)
+				return shortestPath;
+			Queue<Room> nextrooms = new Queue<Room>();
+			foreach (Door door in stage.Doors)
+				if (!path.Contains(door.NewDestRoom))
+				{
+					if (!door.Used)
+					{
+						if (shortestPath == null || path.Count < shortestPath.Length)
+						{
+							shortestPath = path.ToArray();
+							Array.Reverse(shortestPath);
+							return shortestPath;
+						}
+					}
+					else if (!nextrooms.Contains(door.NewDestRoom))
+						nextrooms.Enqueue(door.NewDestRoom);
+				}
+			foreach (Warp door in stage.Warps)
+				if (!path.Contains(door.DestRoom) && !nextrooms.Contains(door.DestRoom))
+					nextrooms.Enqueue(door.DestRoom);
+			while (nextrooms.Count > 0)
+			{
+				Room destroom = nextrooms.Dequeue();
+				path.Push(destroom);
+				shortestPath = FindUnknownDoor(destroom, path, shortestPath);
+				path.Pop();
+			}
+			return shortestPath;
+		}
+
 		private void findRoom_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (findRoom.SelectedIndex == -1)
@@ -358,7 +419,11 @@ namespace KH2DoorTracker
 						world.TryGetValue(proc.ReadByte(Now + 1), out room);
 					if (room != null)
 					{
-						Room[] path = FindShortestPath(room, roomsDoors[findRoom.SelectedIndex]);
+						Room[] path;
+						if (findRoom.SelectedIndex == 0)
+							path = FindUnknownDoor(room);
+						else
+							path = FindShortestPath(room, roomsDoors[findRoom.SelectedIndex - 1]);
 						if (path != null)
 						{
 							roomDist.Text = $"{path.Length - 1} room(s)";
