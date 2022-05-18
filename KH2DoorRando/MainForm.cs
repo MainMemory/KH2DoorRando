@@ -513,12 +513,12 @@ namespace KH2DoorRando
 								List<Room> halllist = new List<Room>(hallways);
 								if (equalPathLength.Checked)
 								{
-									int cnt = Math.Max(halllist.Count / doors.Length, 1);
-									foreach (Door d in doors)
-									{
-										Door d2 = d.NewDestDoor;
-										foreach (Room r in halllist.Take(cnt))
+									Shuffle(doors, rand);
+									while (halllist.Count > 0)
+										foreach (Door d in doors)
 										{
+											Door d2 = d.NewDestDoor;
+											Room r = halllist[0];
 											d.NewDestRoom = r;
 											d.NewDestDoor = r.Doors[0];
 											r.Doors[0].NewDestRoom = d.Room;
@@ -527,28 +527,25 @@ namespace KH2DoorRando
 											d2.NewDestDoor = r.Doors[1];
 											r.Doors[1].NewDestRoom = d2.Room;
 											r.Doors[1].NewDestDoor = d2;
+											halllist.RemoveAt(0);
+											if (halllist.Count == 0)
+												break;
 										}
-										if (halllist.Count <= cnt)
-										{
-											halllist.Clear();
-											break;
-										}
-										halllist.RemoveRange(0, cnt);
+								}
+								else
+									foreach (Room r in halllist)
+									{
+										Door d = doors[rand.Next(doors.Length)];
+										Door d2 = d.NewDestDoor;
+										d.NewDestRoom = r;
+										d.NewDestDoor = r.Doors[0];
+										r.Doors[0].NewDestRoom = d.Room;
+										r.Doors[0].NewDestDoor = d;
+										d2.NewDestRoom = r;
+										d2.NewDestDoor = r.Doors[1];
+										r.Doors[1].NewDestRoom = d2.Room;
+										r.Doors[1].NewDestDoor = d2;
 									}
-								}
-								foreach (Room r in halllist)
-								{
-									Door d = doors[rand.Next(doors.Length)];
-									Door d2 = d.NewDestDoor;
-									d.NewDestRoom = r;
-									d.NewDestDoor = r.Doors[0];
-									r.Doors[0].NewDestRoom = d.Room;
-									r.Doors[0].NewDestDoor = d;
-									d2.NewDestRoom = r;
-									d2.NewDestDoor = r.Doors[1];
-									r.Doors[1].NewDestRoom = d2.Room;
-									r.Doors[1].NewDestDoor = d2;
-								}
 							}
 							else if(!RandomizeRooms(rand, new List<Room>(roomsavail), true))
 								return;
