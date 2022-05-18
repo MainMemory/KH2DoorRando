@@ -63,6 +63,7 @@ namespace KH2DoorRando
 				if (!string.IsNullOrEmpty(settings.Seed))
 					seedName.Text = settings.Seed;
 				twoWayDoors.Checked = settings.TwoWayDoors;
+				equalPathLength.Checked = settings.EqualPathLength;
 				goaEnable.Checked = settings.EnableGoA;
 				ttEnable.Checked = settings.EnableTT;
 				hbEnable.Checked = settings.EnableHB;
@@ -82,6 +83,7 @@ namespace KH2DoorRando
 			else
 				settings = new Settings();
 			modeSelector.SelectedIndex = settings.Mode;
+			hallwayPlacement.SelectedIndex = settings.HallwayPlacement;
 			rooms = JsonConvert.DeserializeObject<Room[]>(File.ReadAllText("Door_Rando.json"));
 			foreach (Room r in rooms)
 			{
@@ -132,6 +134,8 @@ namespace KH2DoorRando
 			settings.Seed = seedName.Text;
 			settings.Mode = modeSelector.SelectedIndex;
 			settings.TwoWayDoors = twoWayDoors.Checked;
+			settings.EqualPathLength = equalPathLength.Checked;
+			settings.HallwayPlacement = hallwayPlacement.SelectedIndex;
 			settings.EnableGoA = goaEnable.Checked;
 			settings.EnableTT = ttEnable.Checked;
 			settings.EnableHB = hbEnable.Checked;
@@ -156,19 +160,23 @@ namespace KH2DoorRando
 			{
 				case 1:
 					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = true;
-					goaEnable.Enabled = false;
+					goaEnable.Enabled = hallwayPlacement.Enabled = false;
 					goaEnable.Checked = true;
 					break;
 				case 2:
 					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = true;
-					dcEnable.Enabled = goaEnable.Enabled = false;
+					dcEnable.Enabled = goaEnable.Enabled = hallwayPlacement.Enabled = false;
 					dcEnable.Checked = goaEnable.Checked = true;
 					break;
+				case 3:
+					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = hallwayPlacement.Enabled = true;
+					break;
 				case 4:
-					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = false;
+					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = hallwayPlacement.Enabled = false;
 					spEnable.Checked = prEnable.Checked = atEnable.Checked = awEnable.Checked = goaEnable.Checked = false;
 					break;
 				default:
+					hallwayPlacement.Enabled = false;
 					spEnable.Enabled = prEnable.Enabled = atEnable.Enabled = awEnable.Enabled = goaEnable.Enabled = true;
 					break;
 			}
@@ -271,7 +279,7 @@ namespace KH2DoorRando
 									Room[] multiexit = roomsavail.Where(a => a.GetUnlockedDoors().Count() > 1).ToArray();
 									Shuffle(multiexit, rand);
 									List<Room> me2 = new List<Room>(multiexit);
-									int split = rand.Next(1, multiexit.Length);
+									int split = equalPathLength.Checked ? multiexit.Length / 2 : rand.Next(1, multiexit.Length);
 									roomlists[0] = me2.GetRange(0, split);
 									roomlists[1] = me2.GetRange(split, me2.Count - split);
 									Room[] singles = roomsavail.Except(multiexit).ToArray();
@@ -313,7 +321,7 @@ namespace KH2DoorRando
 									Shuffle(multiexit, rand);
 									List<Room> me2 = new List<Room>(multiexit);
 									me2.Remove(goa);
-									int split = rand.Next(1, multiexit.Length);
+									int split = equalPathLength.Checked ? multiexit.Length / 2 : rand.Next(1, multiexit.Length);
 									roomlists[0] = me2.GetRange(0, split);
 									roomlists[1] = me2.GetRange(split, me2.Count - split);
 								}
@@ -349,7 +357,7 @@ namespace KH2DoorRando
 									int avg = me2.Count / 7;
 									for (int i = 0; i < 6; i++)
 									{
-										int split = Math.Min(me2.Count - (6 - i), Math.Max(1, avg + (rand.Next(avg) - (avg / 2))));
+										int split = equalPathLength.Checked ? avg : Math.Min(me2.Count - (6 - i), Math.Max(1, avg + (rand.Next(avg) - (avg / 2))));
 										roomlists[i] = me2.GetRange(0, split);
 										me2.RemoveRange(0, split);
 									}
@@ -398,7 +406,7 @@ namespace KH2DoorRando
 									int avg = me2.Count / 7;
 									for (int i = 0; i < 6; i++)
 									{
-										int split = Math.Min(me2.Count - (6 - i), Math.Max(1, avg + (rand.Next(avg) - (avg / 2))));
+										int split = equalPathLength.Checked ? avg : Math.Min(me2.Count - (6 - i), Math.Max(1, avg + (rand.Next(avg) - (avg / 2))));
 										roomlists[i] = me2.GetRange(0, split);
 										me2.RemoveRange(0, split);
 									}
@@ -488,8 +496,47 @@ namespace KH2DoorRando
 									doorlist[0].NewDestRoom = doorlist[0].Room;
 									doorlist[0].NewDestDoor = doorlist[0];
 								}
-								doors = forks.SelectMany(a => a.Doors).ToArray();
-								foreach (Room r in roomsavail.Where(a => a.Doors.Length == 2))
+								switch (hallwayPlacement.SelectedIndex)
+								{
+									case 1:
+										doors = forks.SelectMany(a => a.Doors).Where(a => a.DestRoom.Doors.Length == 1 || a.DestRoom == a.Room).ToArray();
+										break;
+									case 2:
+										doors = forks.SelectMany(a => a.Doors).Where(a => a.DestRoom.Doors.Length != 1).ToArray();
+										break;
+									default:
+										doors = forks.SelectMany(a => a.Doors).ToArray();
+										break;
+								}
+								Room[] hallways = roomsavail.Where(a => a.Doors.Length == 2).ToArray();
+								Shuffle(hallways, rand);
+								List<Room> halllist = new List<Room>(hallways);
+								if (equalPathLength.Checked)
+								{
+									int cnt = Math.Max(halllist.Count / doors.Length, 1);
+									foreach (Door d in doors)
+									{
+										Door d2 = d.NewDestDoor;
+										foreach (Room r in halllist.Take(cnt))
+										{
+											d.NewDestRoom = r;
+											d.NewDestDoor = r.Doors[0];
+											r.Doors[0].NewDestRoom = d.Room;
+											r.Doors[0].NewDestDoor = d;
+											d2.NewDestRoom = r;
+											d2.NewDestDoor = r.Doors[1];
+											r.Doors[1].NewDestRoom = d2.Room;
+											r.Doors[1].NewDestDoor = d2;
+										}
+										if (halllist.Count <= cnt)
+										{
+											halllist.Clear();
+											break;
+										}
+										halllist.RemoveRange(0, cnt);
+									}
+								}
+								foreach (Room r in halllist)
 								{
 									Door d = doors[rand.Next(doors.Length)];
 									Door d2 = d.NewDestDoor;
@@ -836,6 +883,8 @@ namespace KH2DoorRando
 		public int Mode { get; set; }
 		[DefaultValue(true)]
 		public bool TwoWayDoors { get; set; } = true;
+		public bool EqualPathLength { get; set; }
+		public int HallwayPlacement { get; set; }
 		[DefaultValue(true)]
 		public bool EnableGoA { get; set; } = true;
 		[DefaultValue(true)]

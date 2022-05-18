@@ -56,6 +56,9 @@ namespace KH2DoorRando
 			this.modeSelector = new System.Windows.Forms.ComboBox();
 			this.modeInfo = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.equalPathLength = new System.Windows.Forms.CheckBox();
+			this.hallwayPlacement = new System.Windows.Forms.ComboBox();
+			this.label3 = new System.Windows.Forms.Label();
 			label1 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -71,7 +74,7 @@ namespace KH2DoorRando
 			// 
 			// generateButton
 			// 
-			this.generateButton.Location = new System.Drawing.Point(54, 469);
+			this.generateButton.Location = new System.Drawing.Point(54, 495);
 			this.generateButton.Name = "generateButton";
 			this.generateButton.Size = new System.Drawing.Size(75, 23);
 			this.generateButton.TabIndex = 3;
@@ -106,7 +109,7 @@ namespace KH2DoorRando
 			// trackerButton
 			// 
 			this.trackerButton.Enabled = false;
-			this.trackerButton.Location = new System.Drawing.Point(135, 469);
+			this.trackerButton.Location = new System.Drawing.Point(135, 495);
 			this.trackerButton.Name = "trackerButton";
 			this.trackerButton.Size = new System.Drawing.Size(75, 23);
 			this.trackerButton.TabIndex = 7;
@@ -134,7 +137,7 @@ namespace KH2DoorRando
 			this.groupBox1.Controls.Add(this.bcEnable);
 			this.groupBox1.Controls.Add(this.hbEnable);
 			this.groupBox1.Controls.Add(this.ttEnable);
-			this.groupBox1.Location = new System.Drawing.Point(11, 89);
+			this.groupBox1.Location = new System.Drawing.Point(12, 115);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
 			this.groupBox1.Size = new System.Drawing.Size(170, 374);
@@ -325,7 +328,7 @@ namespace KH2DoorRando
 			// spoilersButton
 			// 
 			this.spoilersButton.Enabled = false;
-			this.spoilersButton.Location = new System.Drawing.Point(216, 469);
+			this.spoilersButton.Location = new System.Drawing.Point(216, 495);
 			this.spoilersButton.Name = "spoilersButton";
 			this.spoilersButton.Size = new System.Drawing.Size(75, 23);
 			this.spoilersButton.TabIndex = 9;
@@ -371,6 +374,40 @@ namespace KH2DoorRando
 			this.modeInfo.TabIndex = 12;
 			this.modeInfo.Text = "[?]";
 			// 
+			// equalPathLength
+			// 
+			this.equalPathLength.AutoSize = true;
+			this.equalPathLength.Location = new System.Drawing.Point(121, 65);
+			this.equalPathLength.Name = "equalPathLength";
+			this.equalPathLength.Size = new System.Drawing.Size(114, 17);
+			this.equalPathLength.TabIndex = 13;
+			this.equalPathLength.Text = "Equal Path Length";
+			this.toolTip1.SetToolTip(this.equalPathLength, "The number of rooms in each path will be equal (vs randomly selected).");
+			this.equalPathLength.UseVisualStyleBackColor = true;
+			// 
+			// hallwayPlacement
+			// 
+			this.hallwayPlacement.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.hallwayPlacement.FormattingEnabled = true;
+			this.hallwayPlacement.Items.AddRange(new object[] {
+            "Anywhere",
+            "Before Dead-ends",
+            "Between Branches"});
+			this.hallwayPlacement.Location = new System.Drawing.Point(118, 88);
+			this.hallwayPlacement.Name = "hallwayPlacement";
+			this.hallwayPlacement.Size = new System.Drawing.Size(173, 21);
+			this.hallwayPlacement.TabIndex = 15;
+			this.toolTip1.SetToolTip(this.hallwayPlacement, "Where to place \"hallway\" rooms (2 doors).");
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(12, 91);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(100, 13);
+			this.label3.TabIndex = 14;
+			this.label3.Text = "Hallway Placement:";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -378,6 +415,9 @@ namespace KH2DoorRando
 			this.AutoSize = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.ClientSize = new System.Drawing.Size(315, 579);
+			this.Controls.Add(this.hallwayPlacement);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.equalPathLength);
 			this.Controls.Add(this.modeInfo);
 			this.Controls.Add(this.modeSelector);
 			this.Controls.Add(this.label2);
@@ -427,5 +467,8 @@ namespace KH2DoorRando
 		private System.Windows.Forms.ComboBox modeSelector;
 		private System.Windows.Forms.Label modeInfo;
 		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.CheckBox equalPathLength;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.ComboBox hallwayPlacement;
 	}
 }
