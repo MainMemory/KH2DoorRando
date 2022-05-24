@@ -2520,6 +2520,15 @@
 				"Dest Room": 26
 			}
 		],
+		"Extra Doors": [
+			{
+				"Door ID": 3,
+				"Copy Of": 0,
+				"Dest World": 6,
+				"Dest Room": 2,
+				"Dest Door": 0
+			}
+		],
 		"Events": [
 			2,
 			5,
