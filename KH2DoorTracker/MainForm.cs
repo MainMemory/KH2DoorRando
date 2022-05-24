@@ -446,7 +446,7 @@ namespace KH2DoorTracker
 
 		private void LinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			findRoom.SelectedIndex = Array.IndexOf(roomsDoors, (Room)e.Link.LinkData);
+			findRoom.SelectedIndex = Array.IndexOf(roomsDoors, (Room)e.Link.LinkData) + 1;
 		}
 
 		private void Proc_Exited(object sender, EventArgs e)
