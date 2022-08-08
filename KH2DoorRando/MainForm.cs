@@ -64,6 +64,7 @@ namespace KH2DoorRando
 					seedName.Text = settings.Seed;
 				twoWayDoors.Checked = settings.TwoWayDoors;
 				equalPathLength.Checked = settings.EqualPathLength;
+				startPostGame.Checked = settings.StartPostGame;
 				goaEnable.Checked = settings.EnableGoA;
 				ttEnable.Checked = settings.EnableTT;
 				hbEnable.Checked = settings.EnableHB;
@@ -136,6 +137,7 @@ namespace KH2DoorRando
 			settings.TwoWayDoors = twoWayDoors.Checked;
 			settings.EqualPathLength = equalPathLength.Checked;
 			settings.HallwayPlacement = hallwayPlacement.SelectedIndex;
+			settings.StartPostGame = startPostGame.Checked;
 			settings.EnableGoA = goaEnable.Checked;
 			settings.EnableTT = ttEnable.Checked;
 			settings.EnableHB = hbEnable.Checked;
@@ -260,6 +262,7 @@ namespace KH2DoorRando
 							}
 					roomsavail = rooms.Where(a => a.CopyOf == null && !ignoreworlds.Contains(a.World) && a.Doors.Length > 0).ToArray();
 					goa.World = 4;
+					Door.UnlockAll = startPostGame.Checked;
 					if (seedName.TextLength == 0)
 						seedName.Text = Base36(DateTime.Now.Ticks) + Base36((uint)Environment.TickCount);
 					Random rand = new Random(seedName.Text.GetHashCode());
@@ -495,6 +498,7 @@ namespace KH2DoorRando
 								{
 									doorlist[0].NewDestRoom = doorlist[0].Room;
 									doorlist[0].NewDestDoor = doorlist[0];
+									doorlist[0].Used = true;
 								}
 								switch (hallwayPlacement.SelectedIndex)
 								{
@@ -612,6 +616,7 @@ namespace KH2DoorRando
 									{
 										freeexits[freeexits.Length - 1].NewDestRoom = freeexits[freeexits.Length - 1].Room;
 										freeexits[freeexits.Length - 1].NewDestDoor = freeexits[freeexits.Length - 1];
+										freeexits[freeexits.Length - 1].Used = true;
 									}
 								}
 								else
@@ -654,6 +659,7 @@ namespace KH2DoorRando
 										{
 											d.NewDestRoom = d.Room;
 											d.NewDestDoor = d;
+											d.Used = true;
 										}
 								}
 							}
@@ -691,6 +697,8 @@ namespace KH2DoorRando
 					}
 					sb.AppendLine("}");
 					sb.Replace("{ w=18, r=7, d=1 }", "{ w=18, r=8, d=0 }");
+					sb.AppendLine();
+					sb.AppendLine($"StartPostGame = {(startPostGame.Checked ? "true" : "false")}");
 					File.WriteAllText(dlg.FileName, File.ReadAllText("DoorRando.template.lua").Replace("--REPLACE", sb.ToString()));
 					spoilersButton.Enabled = trackerButton.Enabled = true;
 				}
@@ -751,7 +759,7 @@ namespace KH2DoorRando
 					lockedroomdoors[i].NewDestRoom = freeexits[i].Room;
 					lockedroomdoors[i].NewDestDoor = freeexits[i];
 				}
-				freeexits = freeexits.Skip(lockedrooms.Length).Concat(lockedrooms.SelectMany(a => a.Doors.Where(b => b.Locked ?? false))).ToArray();
+				freeexits = freeexits.Skip(lockedrooms.Length).Concat(lockedrooms.SelectMany(a => a.Doors.Where(b => !b.IsUnlocked()))).ToArray();
 				Door[] singles = roomset.Where(a => a.Doors.Length == 1).Select(a => a.Doors[0]).ToArray();
 				Shuffle(singles, rand);
 				if (singles.Length > freeexits.Length)
@@ -789,6 +797,7 @@ namespace KH2DoorRando
 				{
 					freeexits[freeexits.Length - 1].NewDestRoom = freeexits[freeexits.Length - 1].Room;
 					freeexits[freeexits.Length - 1].NewDestDoor = freeexits[freeexits.Length - 1];
+					freeexits[freeexits.Length - 1].Used = true;
 				}
 			}
 			else
@@ -837,6 +846,7 @@ namespace KH2DoorRando
 					{
 						d.NewDestRoom = d.Room;
 						d.NewDestDoor = d;
+						d.Used = true;
 					}
 			}
 			return true;
@@ -882,6 +892,7 @@ namespace KH2DoorRando
 		public bool TwoWayDoors { get; set; } = true;
 		public bool EqualPathLength { get; set; }
 		public int HallwayPlacement { get; set; }
+		public bool StartPostGame { get; set; }
 		[DefaultValue(true)]
 		public bool EnableGoA { get; set; } = true;
 		[DefaultValue(true)]
@@ -1002,7 +1013,9 @@ namespace KH2DoorRando
 		public bool? Locked { get; set; }
 		public bool? Used { get; set; }
 
-		public bool IsUnlocked() => !(Locked ?? false);
+		public bool IsUnlocked() => UnlockAll || !(Locked ?? false);
+
+		public static bool UnlockAll { get; set; }
 	}
 
 	public class Warp

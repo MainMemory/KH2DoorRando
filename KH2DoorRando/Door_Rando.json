@@ -923,7 +923,10 @@
 				"Door ID": 0,
 				"Dest World": 2,
 				"Dest Room": 27,
-				"Dest Door": 1
+				"Dest Door": 1,
+				"Disable Events": [
+					3
+				]
 			}
 		],
 		"Warps": [],

@@ -59,6 +59,7 @@ namespace KH2DoorRando
 			this.equalPathLength = new System.Windows.Forms.CheckBox();
 			this.hallwayPlacement = new System.Windows.Forms.ComboBox();
 			this.label3 = new System.Windows.Forms.Label();
+			this.startPostGame = new System.Windows.Forms.CheckBox();
 			label1 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -74,7 +75,7 @@ namespace KH2DoorRando
 			// 
 			// generateButton
 			// 
-			this.generateButton.Location = new System.Drawing.Point(54, 495);
+			this.generateButton.Location = new System.Drawing.Point(54, 518);
 			this.generateButton.Name = "generateButton";
 			this.generateButton.Size = new System.Drawing.Size(75, 23);
 			this.generateButton.TabIndex = 3;
@@ -109,7 +110,7 @@ namespace KH2DoorRando
 			// trackerButton
 			// 
 			this.trackerButton.Enabled = false;
-			this.trackerButton.Location = new System.Drawing.Point(135, 495);
+			this.trackerButton.Location = new System.Drawing.Point(135, 518);
 			this.trackerButton.Name = "trackerButton";
 			this.trackerButton.Size = new System.Drawing.Size(75, 23);
 			this.trackerButton.TabIndex = 7;
@@ -137,7 +138,7 @@ namespace KH2DoorRando
 			this.groupBox1.Controls.Add(this.bcEnable);
 			this.groupBox1.Controls.Add(this.hbEnable);
 			this.groupBox1.Controls.Add(this.ttEnable);
-			this.groupBox1.Location = new System.Drawing.Point(12, 115);
+			this.groupBox1.Location = new System.Drawing.Point(12, 138);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
 			this.groupBox1.Size = new System.Drawing.Size(170, 374);
@@ -328,7 +329,7 @@ namespace KH2DoorRando
 			// spoilersButton
 			// 
 			this.spoilersButton.Enabled = false;
-			this.spoilersButton.Location = new System.Drawing.Point(216, 495);
+			this.spoilersButton.Location = new System.Drawing.Point(216, 518);
 			this.spoilersButton.Name = "spoilersButton";
 			this.spoilersButton.Size = new System.Drawing.Size(75, 23);
 			this.spoilersButton.TabIndex = 9;
@@ -408,6 +409,18 @@ namespace KH2DoorRando
 			this.label3.TabIndex = 14;
 			this.label3.Text = "Hallway Placement:";
 			// 
+			// startPostGame
+			// 
+			this.startPostGame.AutoSize = true;
+			this.startPostGame.Location = new System.Drawing.Point(12, 115);
+			this.startPostGame.Name = "startPostGame";
+			this.startPostGame.Size = new System.Drawing.Size(116, 17);
+			this.startPostGame.TabIndex = 16;
+			this.startPostGame.Text = "Start At Post-Game";
+			this.toolTip1.SetToolTip(this.startPostGame, "All the worlds will be completed when the game starts. You may freely explore to " +
+        "open chests and fight superbosses.");
+			this.startPostGame.UseVisualStyleBackColor = true;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -415,6 +428,7 @@ namespace KH2DoorRando
 			this.AutoSize = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.ClientSize = new System.Drawing.Size(315, 579);
+			this.Controls.Add(this.startPostGame);
 			this.Controls.Add(this.hallwayPlacement);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.equalPathLength);
@@ -470,5 +484,6 @@ namespace KH2DoorRando
 		private System.Windows.Forms.CheckBox equalPathLength;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.ComboBox hallwayPlacement;
+		private System.Windows.Forms.CheckBox startPostGame;
 	}
 }
